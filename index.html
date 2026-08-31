@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Yume Trading VIP Signal</title>
+  <!-- SDK Telegram Mini App -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Font Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #0b100d;
+      --card-bg: rgba(18, 28, 22, 0.75);
+      --border-color: rgba(34, 197, 94, 0.2);
+      --accent-green: #10b981;
+      --accent-neon: #00ff87;
+      --text-main: #f0fdf4;
+      --text-muted: #86efac;
+      --red-accent: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      padding: 16px;
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(0, 255, 135, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
+    }
+
+    /* Header Profile */
+    .header-profile {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(12px);
+      padding: 14px 18px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent-neon), var(--accent-green));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: 700;
+      font-size: 1.1rem;
+      box-shadow: 0 0 12px rgba(0, 255, 135, 0.3);
+    }
+
+    .user-details h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .user-details p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .badge-vip {
+      background: rgba(0, 255, 135, 0.15);
+      border: 1px solid var(--accent-neon);
+      color: var(--accent-neon);
+      font-size: 0.7rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    /* Status Bar */
+    .status-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .status-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-neon);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-neon);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 135, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 255, 135, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 135, 0); }
+    }
+
+    /* Section Title */
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Signal Card */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 16px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--accent-neon), var(--accent-green));
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .pair-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .timeframe {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .signal-type {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    .buy-signal {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--accent-neon);
+      border: 1px solid rgba(0, 255, 135, 0.3);
+    }
+
+    .data-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .data-item {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+    }
+
+    .data-item .label {
+      font-size: 0.7rem;
+      color: #9ca3af;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .data-item .value {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .text-green { color: var(--accent-neon); }
+    .text-red { color: var(--red-accent); }
+
+    /* Empty/Denied State */
+    .access-denied {
+      text-align: center;
+      padding: 40px 20px;
+      background: var(--card-bg);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 20px;
+      display: none;
+    }
+
+    .access-denied h3 {
+      color: var(--red-accent);
+      margin-bottom: 8px;
+    }
+
+    .access-denied p {
+      font-size: 0.85rem;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Profil Ringkas -->
+  <div class="header-profile">
+    <div class="user-info">
+      <div id="user-avatar" class="avatar">Y</div>
+      <div class="user-details">
+        <h4 id="user-name">Memuat...</h4>
+        <p id="user-id">ID: ------</p>
+      </div>
+    </div>
+    <div id="vip-badge" class="badge-vip">PRO MEMBER</div>
+  </div>
+
+  <!-- Status Sinyal -->
+  <div class="status-container">
+    <div class="status-text">
+      <span class="pulse-dot"></span> Sinyal Real-Time Aktif
+    </div>
+  </div>
+
+  <div class="section-title">📊 Sinyal Trading Terbaru</div>
+
+  <!-- Konten Sinyal VIP (Muncul Otomatis) -->
+  <div id="signal-container">
+
+    <!-- Card 1 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="pair-name">BTC / USDT</div>
+        <div class="timeframe">15 Menit</div>
+      </div>
+      <div class="signal-type buy-signal">▲ BUY / LONG</div>
+      <div class="data-grid">
+        <div class="data-item">
+          <div class="label">Entry Zone</div>
+          <div class="value">65,200 - 65,450</div>
+        </div>
+        <div class="data-item">
+          <div class="label">Target TP</div>
+          <div class="value text-green">67,000</div>
+        </div>
+        <div class="data-item">
+          <div class="label">Stop Loss</div>
+          <div class="value text-red">64,300</div>
+        </div>
+        <div class="data-item">
+          <div class="label">Leverage</div>
+          <div class="value">10x - 20x</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="card">
+      <div class="card-header">
+        <div class="pair-name">ETH / USDT</div>
+        <div class="timeframe">1 Jam</div>
+      </div>
+      <div class="signal-type buy-signal">▲ BUY / LONG</div>
+      <div class="data-grid">
+        <div class="data-item">
+          <div class="label">Entry Zone</div>
+          <div class="value">3,450 - 3,480</div>
+        </div>
+        <div class="data-item">
+          <div class="label">Target TP</div>
+          <div class="value text-green">3,620</div>
+        </div>
+        <div class="data-item">
+          <div class="label">Stop Loss</div>
+          <div class="value text-red">3,390</div>
+        </div>
+        <div class="data-item">
+          <div class="label">Leverage</div>
+          <div class="value">10x - 15x</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Pesan Jika Belum Terdaftar -->
+  <div id="denied-box" class="access-denied">
+    <h3>🚫 Akses Terbatas</h3>
+    <p>Akun Anda belum terdaftar dalam paket VIP. Silakan hubungi admin untuk aktivasi sinyal.</p>
+  </div>
+
+  <script>
+    // Inisialisasi Telegram Mini App SDK
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand(); // Layar Penuh
+
+    // Tangkap data pengguna dari Telegram secara otomatis
+    const user = tg.initDataUnsafe?.user;
+
+    if (user) {
+      // Set nama & ID pengguna
+      const displayName = user.username ? `@${user.username}` : `${user.first_name}`;
+      document.getElementById("user-name").innerText = displayName;
+      document.getElementById("user-id").innerText = `ID: ${user.id}`;
+      document.getElementById("user-avatar").innerText = (user.first_name || "Y").charAt(0).toUpperCase();
+
+      // Opsional: Panggil API Supabase untuk validasi user
+      // checkUserStatus(user.id);
+    } else {
+      // Jika dibuka di browser biasa (bukan Telegram)
+      document.getElementById("user-name").innerText = "Tamu / Browser";
+      document.getElementById("user-id").innerText = "Buka via Telegram";
+    }
+
+    // Fungsi placeholder jika ingin memvalidasi via Supabase
+    async function checkUserStatus(userId) {
+      try {
+        const res = await fetch(`https://jcmmaxikpubspuavqknh.supabase.co/functions/v1/check-user?userId=${userId}`);
+        const data = await res.json();
+
+        if (!data.isVIP) {
+          document.getElementById("signal-container").style.display = "none";
+          document.getElementById("denied-box").style.display = "block";
+          document.getElementById("vip-badge").innerText = "FREE MEMBER";
+          document.getElementById("vip-badge").style.borderColor = "#ef4444";
+          document.getElementById("vip-badge").style.color = "#ef4444";
+        }
+      } catch (e) {
+        console.log("Menampilkan sinyal mode sampel.");
+      }
+    }
+  </script>
+</body>
+  </html>
+
