@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Yume Trading - Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #050b08;
+      --card-bg: rgba(12, 24, 18, 0.85);
+      --card-border: rgba(16, 185, 129, 0.25);
+      --accent-neon: #00ff87;
+      --text-main: #f0fdf4;
+      --text-muted: #9ca3af;
+      --red-accent: #ff4d4d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      background-image: radial-gradient(circle at 50% 0%, rgba(0, 255, 135, 0.15) 0%, transparent 60%);
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .title { text-align: center; margin-bottom: 20px; }
+    .title h2 { font-size: 1.4rem; color: var(--accent-neon); }
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 700; }
+    .form-control {
+      width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border);
+      border-radius: 10px; color: var(--text-main); font-size: 0.9rem; outline: none;
+    }
+    .form-control:focus { border-color: var(--accent-neon); }
+    .btn-submit {
+      width: 100%; padding: 12px; background: linear-gradient(135deg, var(--accent-neon), #059669);
+      border: none; border-radius: 10px; color: #022c22; font-weight: 800; cursor: pointer; margin-top: 10px;
+    }
+    .alert-error {
+      background: rgba(255, 77, 77, 0.15); border: 1px solid var(--red-accent); color: var(--red-accent);
+      padding: 10px; border-radius: 8px; font-size: 0.8rem; text-align: center; margin-bottom: 12px; display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="title">
+      <h2>YUME TRADING VIP</h2>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">Silakan masuk ke akun Anda</p>
+    </div>
+
+    <div id="error-msg" class="alert-error">Username atau Password salah!</div>
+
+    <form id="login-form">
+      <div class="form-group">
+        <label>USERNAME</label>
+        <input type="text" id="username" class="form-control" required placeholder="Masukkan username">
+      </div>
+      <div class="form-group">
+        <label>PASSWORD</label>
+        <input type="password" id="password" class="form-control" required placeholder="Masukkan password">
+      </div>
+      <button type="submit" class="btn-submit">LOGIN</button>
+    </form>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    document.getElementById("login-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const u = document.getElementById("username").value;
+      const p = document.getElementById("password").value;
+
+      // Akun Demo Sederhana (Ganti dengan API Supabase nantinya)
+      if (u === "member" && p === "123") {
+        sessionStorage.setItem("yume_session_role", "member");
+        window.location.href = "dashboard.html";
+      } else if (u === "admin" && p === "admin123") {
+        sessionStorage.setItem("yume_session_role", "admin");
+        window.location.href = "admin.html";
+      } else {
+        document.getElementById("error-msg").style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html>
