@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Yume Trading - Dashboard Member</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #050b08; --card-bg: rgba(12, 24, 18, 0.85); --card-border: rgba(16, 185, 129, 0.25);
+      --accent-neon: #00ff87; --text-main: #f0fdf4; --text-muted: #9ca3af; --red-accent: #ff4d4d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); padding: 14px; min-height: 100vh; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .badge-online { background: rgba(0, 255, 135, 0.1); border: 1px solid var(--accent-neon); color: var(--accent-neon); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; }
+    .btn-logout { background: rgba(255, 77, 77, 0.15); border: 1px solid var(--red-accent); color: var(--red-accent); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+    .item { background: rgba(0,0,0,0.4); padding: 8px 10px; border-radius: 8px; font-size: 0.8rem; }
+    .item label { display: block; font-size: 0.65rem; color: var(--text-muted); font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="badge-online">🟢 ONLINE MEMBER</div>
+    <button class="btn-logout" onclick="logout()">LOGOUT</button>
+  </div>
+
+  <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent-neon);">📈 Sinyal Aktif VIP</h3>
+
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center;">
+      <b style="font-size: 1.1rem;">BTC / USDT</b>
+      <span style="color:var(--accent-neon); font-size: 0.75rem; font-weight:800;">15M - LONG</span>
+    </div>
+    <div class="grid">
+      <div class="item"><label>ENTRY</label>65,200 - 65,450</div>
+      <div class="item"><label>TARGET TP</label><span style="color:var(--accent-neon);">67,000</span></div>
+      <div class="item"><label>STOP LOSS</label><span style="color:var(--red-accent);">64,300</span></div>
+      <div class="item"><label>LEVERAGE</label>10x - 20x</div>
+    </div>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    // WAJIB: Proteksi Halaman saat Dimuat
+    protectMemberPage();
+  </script>
+</body>
+</html>
+
