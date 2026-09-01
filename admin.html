@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Yume Trading - Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #050b08; --card-bg: rgba(12, 24, 18, 0.85); --card-border: rgba(16, 185, 129, 0.25);
+      --accent-neon: #00ff87; --text-main: #f0fdf4; --text-muted: #9ca3af; --red-accent: #ff4d4d;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background-color: var(--bg-dark); color: var(--text-main); padding: 14px; min-height: 100vh; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-bottom: 16px; }
+    .form-group { margin-bottom: 10px; }
+    .form-group label { display: block; font-size: 0.7rem; color: var(--text-muted); font-weight:700; margin-bottom:4px; }
+    .form-control { width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size:0.85rem; }
+    .btn-add { width: 100%; padding: 10px; background: var(--accent-neon); border: none; border-radius: 8px; font-weight:800; color: #022c22; cursor: pointer; margin-top: 8px; }
+    .btn-logout { background: rgba(255, 77, 77, 0.15); border: 1px solid var(--red-accent); color: var(--red-accent); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h3 style="color: var(--accent-neon);">⚡ ADMIN PANEL</h3>
+    <button class="btn-logout" onclick="logout()">LOGOUT</button>
+  </div>
+
+  <div class="card">
+    <h4 style="margin-bottom: 10px; font-size: 0.9rem;">Input Sinyal Baru</h4>
+    <div class="form-group">
+      <label>PAIR TRADING</label>
+      <input type="text" placeholder="Misal: BTC/USDT" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>POSISI</label>
+      <select class="form-control">
+        <option>BUY / LONG</option>
+        <option>SELL / SHORT</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>ENTRY AREA</label>
+      <input type="text" placeholder="Misal: 65,000 - 65,200" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>TARGET TP</label>
+      <input type="text" placeholder="Misal: 67,000" class="form-control">
+    </div>
+    <div class="form-group">
+      <label>STOP LOSS</label>
+      <input type="text" placeholder="Misal: 64,000" class="form-control">
+    </div>
+    <button class="btn-add">KIRIM SINYAL</button>
+  </div>
+
+  <script src="auth.js"></script>
+  <script>
+    // WAJIB: Hanya Admin yang Bisa Buka Halaman Ini
+    protectAdminPage();
+  </script>
+</body>
+</html>
+
