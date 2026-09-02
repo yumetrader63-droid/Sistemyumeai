@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - Yume Algorit VIP</title>
+  <title>Admin Panel - VIP Signal</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
@@ -12,7 +12,6 @@
       --bg-card: #14181f;
       --bg-input: #1d232c;
       --accent-green: #00e676;
-      --green-glow: rgba(0, 230, 118, 0.2);
       --red-trade: #ff5252;
       --border-dark: #232933;
       --text-main: #ffffff;
@@ -24,7 +23,6 @@
       margin: 0;
       padding: 0;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -34,20 +32,16 @@
       padding: 16px;
     }
 
-    /* Layout Responsive Grid */
     .admin-layout {
-      max-width: 1400px;
+      max-width: 1300px;
       margin: 0 auto;
       display: grid;
       grid-template-columns: 340px 1fr;
       gap: 20px;
     }
 
-    /* Penyesuaian Tablet & HP */
     @media (max-width: 992px) {
-      .admin-layout {
-        grid-template-columns: 1fr;
-      }
+      .admin-layout { grid-template-columns: 1fr; }
     }
 
     .card {
@@ -62,15 +56,9 @@
       font-weight: 800;
       color: var(--accent-green);
       margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
     }
 
-    /* Form Styles */
-    .form-group {
-      margin-bottom: 12px;
-    }
+    .form-group { margin-bottom: 12px; }
 
     label {
       display: block;
@@ -78,7 +66,6 @@
       font-weight: 800;
       color: var(--text-muted);
       margin-bottom: 6px;
-      letter-spacing: 0.5px;
     }
 
     input, select {
@@ -105,14 +92,12 @@
       font-weight: 800;
       font-size: 0.85rem;
       cursor: pointer;
-      transition: opacity 0.2s;
     }
 
     .btn-green { background: var(--accent-green); color: #000; }
     .btn-red { background: rgba(255, 82, 82, 0.15); color: var(--red-trade); border: 1px solid var(--red-trade); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* Grid Sub-Cards Timeframe */
     .grid-3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -120,9 +105,7 @@
     }
 
     @media (max-width: 768px) {
-      .grid-3 {
-        grid-template-columns: 1fr;
-      }
+      .grid-3 { grid-template-columns: 1fr; }
     }
 
     .tf-box {
@@ -132,11 +115,7 @@
       padding: 12px;
     }
 
-    /* Tables Responsive Handling */
-    .table-responsive {
-      width: 100%;
-      overflow-x: auto;
-    }
+    .table-responsive { width: 100%; overflow-x: auto; }
 
     table {
       width: 100%;
@@ -161,22 +140,28 @@
       font-weight: 700;
     }
 
-    /* Signal Indicators */
-    .dir-up { color: var(--accent-green); font-size: 0.95rem; }
-    .dir-down { color: var(--red-trade); font-size: 0.95rem; }
+    .dir-up { color: var(--accent-green); }
+    .dir-down { color: var(--red-trade); }
+    
+    .schedule-tag {
+      display: inline-block;
+      padding: 3px 6px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 4px;
+      margin: 2px;
+      font-size: 0.75rem;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Responsive Layout Container -->
   <div class="admin-layout">
     
-    <!-- KOLOM KIRI: MANAJEMEN USER -->
+    <!-- KIRI: MANAJEMEN USER -->
     <div style="display: flex; flex-direction: column; gap: 20px;">
       
-      <!-- Card Buat User -->
       <div class="card">
-        <div class="card-title">BUAT USER BARU</div>
+        <div class="card-title">TAMBAH USER BARU</div>
         <form id="form-create-user">
           <div class="form-group">
             <label>EMAIL USER</label>
@@ -186,13 +171,12 @@
             <label>PASSWORD</label>
             <input type="password" id="new-password" placeholder="Minimal 6 karakter" required>
           </div>
-          <button type="submit" id="btn-add-user" class="btn btn-green">TAMBAH USER</button>
+          <button type="submit" class="btn btn-green">TAMBAH USER</button>
         </form>
       </div>
 
-      <!-- Card List User -->
       <div class="card">
-        <div class="card-title">DAFTAR USER</div>
+        <div class="card-title">DAFTAR USER DATABASE</div>
         <div class="table-responsive">
           <table>
             <thead>
@@ -202,7 +186,7 @@
               </tr>
             </thead>
             <tbody id="user-list-tbody">
-              <tr><td colspan="2" style="color: var(--text-muted);">Memuat...</td></tr>
+              <tr><td colspan="2" style="color: var(--text-muted);">Memuat user...</td></tr>
             </tbody>
           </table>
         </div>
@@ -210,14 +194,13 @@
 
     </div>
 
-    <!-- KOLOM KANAN: GENERATE SINYAL MULTI-TIMEFRAME -->
+    <!-- KANAN: GENERATE SINYAL JADWAL KELIPATAN -->
     <div style="display: flex; flex-direction: column; gap: 20px;">
       
-      <!-- Card Generator Sinyal -->
       <div class="card">
-        <div class="card-title">GENERATE ALL TIMEFRAME SIGNALS</div>
+        <div class="card-title">GENERATE SINYAL KELIPATAN WAKTU</div>
         <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px;">
-          Memilih Pair akan langsung membuat 3 sinyal (15s, 1m, 5m). Sinyal lama pada pair ini otomatis terhapus.
+          Sinyal akan otomatis terbuat menjadi deret jam/menit kelipatan untuk setiap timeframe.
         </p>
 
         <form id="form-generate-signals">
@@ -232,66 +215,64 @@
             </select>
           </div>
 
-          <!-- Input Multi-Timeframe Responsive Grid -->
           <div class="grid-3" style="margin-bottom: 14px;">
             
+            <!-- TF 15 Detik -->
             <div class="tf-box">
-              <span style="font-size: 0.7rem; color: var(--accent-green); font-weight: 800;">15s (BERLAKU 2 JAM)</span>
+              <span style="font-size: 0.75rem; color: var(--accent-green); font-weight: 800;">TIMEFRAME 15s</span>
               <div class="form-group" style="margin-top: 8px;">
-                <label>ARAH</label>
-                <select id="dir-15s"><option value="UP">▲ BUY</option><option value="DOWN">▼ SELL</option></select>
+                <label>POLA AWAL</label>
+                <select id="pattern-15s">
+                  <option value="BUY_FIRST">▲ BUY lalu ▼ SELL</option>
+                  <option value="SELL_FIRST">▼ SELL lalu ▲ BUY</option>
+                </select>
               </div>
-              <div class="form-group"><label>ENTRY</label><input type="text" id="entry-15s" placeholder="65200" required></div>
-              <div class="form-group"><label>TP</label><input type="text" id="tp-15s" placeholder="65800" required></div>
-              <div class="form-group"><label>SL</label><input type="text" id="sl-15s" placeholder="64900" required></div>
             </div>
 
+            <!-- TF 1 Menit -->
             <div class="tf-box">
-              <span style="font-size: 0.7rem; color: var(--accent-green); font-weight: 800;">1m (BERLAKU 4 JAM)</span>
+              <span style="font-size: 0.75rem; color: var(--accent-green); font-weight: 800;">TIMEFRAME 1m</span>
               <div class="form-group" style="margin-top: 8px;">
-                <label>ARAH</label>
-                <select id="dir-1m"><option value="UP">▲ BUY</option><option value="DOWN">▼ SELL</option></select>
+                <label>POLA AWAL</label>
+                <select id="pattern-1m">
+                  <option value="BUY_FIRST">▲ BUY lalu ▼ SELL</option>
+                  <option value="SELL_FIRST">▼ SELL lalu ▲ BUY</option>
+                </select>
               </div>
-              <div class="form-group"><label>ENTRY</label><input type="text" id="entry-1m" placeholder="65200" required></div>
-              <div class="form-group"><label>TP</label><input type="text" id="tp-1m" placeholder="66000" required></div>
-              <div class="form-group"><label>SL</label><input type="text" id="sl-1m" placeholder="64800" required></div>
             </div>
 
+            <!-- TF 5 Menit -->
             <div class="tf-box">
-              <span style="font-size: 0.7rem; color: var(--accent-green); font-weight: 800;">5m (BERLAKU 8 JAM)</span>
+              <span style="font-size: 0.75rem; color: var(--accent-green); font-weight: 800;">TIMEFRAME 5m</span>
               <div class="form-group" style="margin-top: 8px;">
-                <label>ARAH</label>
-                <select id="dir-5m"><option value="UP">▲ BUY</option><option value="DOWN">▼ SELL</option></select>
+                <label>POLA AWAL</label>
+                <select id="pattern-5m">
+                  <option value="BUY_FIRST">▲ BUY lalu ▼ SELL</option>
+                  <option value="SELL_FIRST">▼ SELL lalu ▲ BUY</option>
+                </select>
               </div>
-              <div class="form-group"><label>ENTRY</label><input type="text" id="entry-5m" placeholder="65200" required></div>
-              <div class="form-group"><label>TP</label><input type="text" id="tp-5m" placeholder="66500" required></div>
-              <div class="form-group"><label>SL</label><input type="text" id="sl-5m" placeholder="64500" required></div>
             </div>
 
           </div>
 
-          <button type="submit" id="btn-publish" class="btn btn-green">PUBLIKASIKAN SEMUA TIMEFRAME</button>
+          <button type="submit" id="btn-publish" class="btn btn-green">GENERATE JADWAL SINYAL</button>
         </form>
       </div>
 
-      <!-- Card Sinyal Master Aktif -->
+      <!-- CARD DAFTAR SINYAL AKTIF -->
       <div class="card">
-        <div class="card-title">SINYAL MASTER AKTIF DI DATABASE</div>
+        <div class="card-title">DAFTAR SINYAL KELIPATAN TERPUBLIKASI</div>
         <div class="table-responsive">
           <table>
             <thead>
               <tr>
                 <th>PAIR</th>
                 <th>TF</th>
-                <th>ARAH</th>
-                <th>ENTRY</th>
-                <th>TP</th>
-                <th>SL</th>
-                <th>EXPIRED</th>
+                <th>DERET WAKTU & SINYAL</th>
               </tr>
             </thead>
             <tbody id="signal-master-tbody">
-              <tr><td colspan="7" style="color: var(--text-muted);">Memuat sinyal...</td></tr>
+              <tr><td colspan="3" style="color: var(--text-muted);">Memuat sinyal...</td></tr>
             </tbody>
           </table>
         </div>
@@ -305,14 +286,14 @@
     import { db } from "./firebase-config.js";
     import { collection, doc, setDoc, deleteDoc, onSnapshot, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // 1. MANAJEMEN USER
+    // 1. MEMBACA & MENAMPILKAN DAFTAR USER DARI DATABASE
     const userTbody = document.getElementById("user-list-tbody");
     const formUser = document.getElementById("form-create-user");
 
     onSnapshot(collection(db, "users"), (snapshot) => {
       userTbody.innerHTML = "";
       if (snapshot.empty) {
-        userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--text-muted);">Belum ada user.</td></tr>`;
+        userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--text-muted);">Belum ada user registered.</td></tr>`;
         return;
       }
       snapshot.forEach(docSnap => {
@@ -328,12 +309,14 @@
       });
     });
 
+    // Hapus User
     window.deleteUser = async (uid) => {
-      if (confirm("Hapus user ini dari database?")) {
+      if (confirm("Hapus user ini dari Firestore Database?")) {
         await deleteDoc(doc(db, "users", uid));
       }
     };
 
+    // Buat User Baru
     formUser.addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("new-email").value;
@@ -349,103 +332,119 @@
         alert("User berhasil ditambahkan!");
         formUser.reset();
       } catch (err) {
-        alert("Error: " + err.message);
+        alert("Gagal menambahkan user: " + err.message);
       }
     });
 
-    // 2. GENERATE ALL TIMEFRAMES
+    // 2. LOGIKA GENERATE DERET WAKTU KELIPATAN
+    function generateTimeSchedule(tf, pattern) {
+      const schedule = [];
+      const now = new Date();
+      let start = new Date(now);
+
+      // Tentukan interval dalam milidetik & format jam
+      let stepMs = 0;
+      if (tf === "15s") stepMs = 15 * 1000;
+      else if (tf === "1m") stepMs = 60 * 1000;
+      else if (tf === "5m") stepMs = 5 * 60 * 1000;
+
+      // Buat 4 deret sinyal kedepan
+      for (let i = 1; i <= 4; i++) {
+        const itemTime = new Date(start.getTime() + (i * stepMs));
+        
+        let hours = String(itemTime.getHours()).padStart(2, '0');
+        let mins = String(itemTime.getMinutes()).padStart(2, '0');
+        let secs = String(itemTime.getSeconds()).padStart(2, '0');
+        
+        let timeStr = tf === "15s" ? `${hours}:${mins}:${secs}` : `${hours}:${mins}`;
+
+        // Tentukan Arah Selang-seling (Buy / Sell)
+        let direction = "";
+        if (pattern === "BUY_FIRST") {
+          direction = (i % 2 !== 0) ? "UP" : "DOWN";
+        } else {
+          direction = (i % 2 !== 0) ? "DOWN" : "UP";
+        }
+
+        schedule.push({
+          time: timeStr,
+          direction: direction
+        });
+      }
+      return schedule;
+    }
+
+    // 3. GENERATE & PUBLISH SINYAL
     const formSignal = document.getElementById("form-generate-signals");
     const btnPublish = document.getElementById("btn-publish");
 
     formSignal.addEventListener("submit", async (e) => {
       e.preventDefault();
       btnPublish.disabled = true;
-      btnPublish.innerText = "PUBLISHING...";
+      btnPublish.innerText = "GENERATING...";
 
       const pair = document.getElementById("signal-pair").value;
-      const nowMs = new Date().getTime();
-      const twoWeeksMs = nowMs + (14 * 24 * 60 * 60 * 1000);
 
       const timeframes = [
-        {
-          tf: "15s",
-          durationHours: 2,
-          dir: document.getElementById("dir-15s").value,
-          entry: document.getElementById("entry-15s").value,
-          tp: document.getElementById("tp-15s").value,
-          sl: document.getElementById("sl-15s").value,
-        },
-        {
-          tf: "1m",
-          durationHours: 4,
-          dir: document.getElementById("dir-1m").value,
-          entry: document.getElementById("entry-1m").value,
-          tp: document.getElementById("tp-1m").value,
-          sl: document.getElementById("sl-1m").value,
-        },
-        {
-          tf: "5m",
-          durationHours: 8,
-          dir: document.getElementById("dir-5m").value,
-          entry: document.getElementById("entry-5m").value,
-          tp: document.getElementById("tp-5m").value,
-          sl: document.getElementById("sl-5m").value,
-        }
+        { tf: "15s", pattern: document.getElementById("pattern-15s").value },
+        { tf: "1m", pattern: document.getElementById("pattern-1m").value },
+        { tf: "5m", pattern: document.getElementById("pattern-5m").value }
       ];
 
       try {
+        // Hapus sinyal master lama untuk pair ini
         const q = query(collection(db, "admin_master_signals"), where("pair", "==", pair));
         const oldDocs = await getDocs(q);
         const deletes = [];
         oldDocs.forEach(d => deletes.push(deleteDoc(doc(db, "admin_master_signals", d.id))));
         await Promise.all(deletes);
 
+        // Simpan sinyal kelipatan baru
         const savePromises = timeframes.map(item => {
+          const schedule = generateTimeSchedule(item.tf, item.pattern);
           const newRef = doc(collection(db, "admin_master_signals"));
           return setDoc(newRef, {
             pair: pair,
             timeframe: item.tf,
-            direction: item.dir,
-            entry: item.entry,
-            tp: item.tp,
-            sl: item.sl,
-            durationHours: item.durationHours,
-            adminExpiryMs: twoWeeksMs,
+            schedule: schedule,
             createdAt: serverTimestamp()
           });
         });
 
         await Promise.all(savePromises);
-        alert(`Sinyal ${pair} (15s, 1m, 5m) berhasil terpublikasi!`);
+        alert(`Sinyal kelipatan waktu ${pair} berhasil dipublikasikan!`);
       } catch (err) {
         alert("Gagal mempublikasikan: " + err.message);
       } finally {
         btnPublish.disabled = false;
-        btnPublish.innerText = "PUBLIKASIKAN SEMUA TIMEFRAME";
+        btnPublish.innerText = "GENERATE JADWAL SINYAL";
       }
     });
 
-    // 3. LISTEN MASTER SIGNALS
+    // 4. MEMBACA & MENAMPILKAN SINYAL KELIPATAN AKTIF
     onSnapshot(collection(db, "admin_master_signals"), (snapshot) => {
       const tbody = document.getElementById("signal-master-tbody");
       tbody.innerHTML = "";
       if (snapshot.empty) {
-        tbody.innerHTML = `<tr><td colspan="7" style="color:var(--text-muted);">Belum ada sinyal terpublikasi.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="3" style="color:var(--text-muted);">Belum ada sinyal aktif.</td></tr>`;
         return;
       }
       snapshot.forEach(docSnap => {
         const d = docSnap.data();
-        const dirSymbol = d.direction === "UP" ? `<b class="dir-up">▲ BUY</b>` : `<b class="dir-down">▼ SELL</b>`;
-        const exp = new Date(d.adminExpiryMs).toLocaleDateString("id-ID");
+        let scheduleHtml = "";
+
+        if (d.schedule && Array.isArray(d.schedule)) {
+          d.schedule.forEach(item => {
+            const dirIcon = item.direction === "UP" ? `<span class="dir-up">▲ BUY</span>` : `<span class="dir-down">▼ SELL</span>`;
+            scheduleHtml += `<span class="schedule-tag"><b>${item.time}</b> : ${dirIcon}</span> `;
+          });
+        }
+
         tbody.innerHTML += `
           <tr>
             <td><b>${d.pair}</b></td>
             <td>${d.timeframe}</td>
-            <td>${dirSymbol}</td>
-            <td>${d.entry}</td>
-            <td>${d.tp}</td>
-            <td>${d.sl}</td>
-            <td style="color:var(--text-muted);">${exp}</td>
+            <td>${scheduleHtml}</td>
           </tr>
         `;
       });
