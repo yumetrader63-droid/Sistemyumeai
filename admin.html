@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - VIP Signal (Secure)</title>
+  <title>Admin Panel - VIP Signal</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
@@ -61,11 +61,10 @@
 
   <div class="admin-layout">
     
-    <!-- KIRI: DAFTAR & TAMBAH USER -->
     <div style="display: flex; flex-direction: column; gap: 20px;">
       
       <div class="card">
-        <div class="card-title">TAMBAH USER BARU</div>
+        <div class="card-title">TAMBAH USER BARU (AUTH & FIRESTORE)</div>
         <form id="form-create-user">
           <div class="form-group">
             <label>EMAIL USER</label>
@@ -75,7 +74,7 @@
             <label>PASSWORD</label>
             <input type="password" id="new-password" placeholder="Minimal 6 karakter" required>
           </div>
-          <button type="submit" class="btn btn-green">TAMBAH USER</button>
+          <button type="submit" id="btn-add-user" class="btn btn-green">TAMBAH USER</button>
         </form>
       </div>
 
@@ -98,13 +97,12 @@
 
     </div>
 
-    <!-- KANAN: GENERATE ALL TIMEFRAMES (2 MINGGU) -->
     <div style="display: flex; flex-direction: column; gap: 20px;">
       
       <div class="card">
         <div class="card-title">GENERATE SINYAL 2 MINGGU (ALL TIMEFRAMES)</div>
         <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px;">
-          Sistem akan membuat sinyal acak gacor untuk <b>15s, 1m, dan 5m</b> yang berlaku selama <b>14 hari ke depan</b> secara aman.
+          Sekali klik untuk membuat jadwal waktu sinyal acak gacor di <b>15s, 1m, dan 5m</b> yang berlaku selama <b>14 hari ke depan</b>.
         </p>
 
         <form id="form-generate-signals">
@@ -123,7 +121,6 @@
         </form>
       </div>
 
-      <!-- DAFTAR SINYAL MASTER -->
       <div class="card">
         <div class="card-title">DAFTAR SINYAL MASTER DI DATABASE</div>
         <div class="table-responsive">
@@ -149,13 +146,18 @@
   </div>
 
   <script type="module">
-    import { db } from "./firebase-config.js";
+    import { auth, db } from "./firebase-config.js";
+    import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { collection, doc, setDoc, deleteDoc, onSnapshot, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // 1. Dapatkan & Tampilkan User dengan Penanganan Error Aman
+    // -------------------------------------------------------------
+    // 1. MANAJEMEN USER (BUAT DI AUTH + SIMPAN FIRESTORE)
+    // -------------------------------------------------------------
     const userTbody = document.getElementById("user-list-tbody");
     const formUser = document.getElementById("form-create-user");
+    const btnAddUser = document.getElementById("btn-add-user");
 
+    // Tampilkan daftar user realtime dari Firestore
     onSnapshot(collection(db, "users"), (snapshot) => {
       userTbody.innerHTML = "";
       if (snapshot.empty) {
@@ -166,7 +168,7 @@
         const u = docSnap.data();
         userTbody.innerHTML += `
           <tr>
-            <td>${u.email || 'No Email'}</td>
+            <td>${u.email}</td>
             <td style="text-align: right;">
               <button class="btn btn-red" style="padding:4px 8px; font-size:0.7rem; width:auto;" onclick="deleteUser('${docSnap.id}')">Hapus</button>
             </td>
@@ -174,40 +176,51 @@
         `;
       });
     }, (error) => {
-      console.error("Firestore User Error:", error);
-      userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--red-trade);">Gagal memuat: Periksa Rules Firestore!</td></tr>`;
+      console.error("User Listen Error:", error);
+      userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--red-trade);">Error memuat Firestore Rules!</td></tr>`;
     });
 
+    // Hapus dokumen user dari Firestore
     window.deleteUser = async (uid) => {
-      if (confirm("Hapus user ini dari database?")) {
-        try {
-          await deleteDoc(doc(db, "users", uid));
-        } catch (err) {
-          alert("Gagal menghapus user: " + err.message);
-        }
+      if (confirm("Hapus user ini dari database admin?")) {
+        await deleteDoc(doc(db, "users", uid));
       }
     };
 
+    // Buat User Baru: Mendaftarkan ke Firebase Auth LALU Simpan Dokumen ke Firestore
     formUser.addEventListener("submit", async (e) => {
       e.preventDefault();
+      btnAddUser.disabled = true;
+      btnAddUser.innerText = "MEMPROSES...";
+
       const email = document.getElementById("new-email").value.trim();
       const pwd = document.getElementById("new-password").value.trim();
 
       try {
-        const newUserRef = doc(collection(db, "users"));
-        await setDoc(newUserRef, {
+        // Step A: Registrasi di Firebase Auth agar user BISA LOGIN
+        const userCredential = await createUserWithEmailAndPassword(auth, email, pwd);
+        const user = userCredential.user;
+
+        // Step B: Simpan profil ke Firestore agar BISA DILIHAT DI TABEL ADMIN
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
           email: email,
-          password: pwd,
           createdAt: serverTimestamp()
         });
-        alert("User berhasil ditambahkan!");
+
+        alert("Berhasil! User sudah bisa Login dan otomatis muncul di daftar Admin.");
         formUser.reset();
       } catch (err) {
-        alert("Error menambahkan user: " + err.message);
+        alert("Gagal membuat user: " + err.message);
+      } finally {
+        btnAddUser.disabled = false;
+        btnAddUser.innerText = "TAMBAH USER";
       }
     });
 
-    // 2. Generate Sinyal Gacor 2 Minggu (Aman & Ringan)
+    // -------------------------------------------------------------
+    // 2. LOGIKA GENERATE DERET WAKTU GACOR 2 MINGGU
+    // -------------------------------------------------------------
     function generateTwoWeeksSchedule(tf) {
       const schedule = [];
       const now = new Date();
@@ -231,6 +244,7 @@
         
         let timeStr = tf === "15s" ? `${hours}:${mins}:${secs}` : `${hours}:${mins}`;
 
+        // Pola acak gacor (tidak pernah muncul 3x sama berturut-turut)
         let direction = Math.random() > 0.5 ? "UP" : "DOWN";
         if (direction === lastDir) {
           consecutiveCount++;
@@ -244,22 +258,21 @@
 
         lastDir = direction;
 
-        schedule.push({
-          time: timeStr,
-          direction: direction
-        });
+        schedule.push({ time: timeStr, direction: direction });
       }
       return schedule;
     }
 
-    // 3. Publish Sinyal
+    // -------------------------------------------------------------
+    // 3. GENERATE ALL TIMEFRAME UNTUK 1 PAIR (2 MINGGU)
+    // -------------------------------------------------------------
     const formSignal = document.getElementById("form-generate-signals");
     const btnPublish = document.getElementById("btn-publish");
 
     formSignal.addEventListener("submit", async (e) => {
       e.preventDefault();
       btnPublish.disabled = true;
-      btnPublish.innerText = "PROSES GENERATE...";
+      btnPublish.innerText = "GENERATING SINYAL 2 MINGGU...";
 
       const pair = document.getElementById("signal-pair").value;
       const allTimeframes = ["15s", "1m", "5m"];
@@ -268,14 +281,14 @@
       const twoWeeksMs = nowMs + (14 * 24 * 60 * 60 * 1000);
 
       try {
-        // Hapus sinyal lama untuk pair ini
+        // Hapus sinyal master lama untuk pair ini
         const q = query(collection(db, "admin_master_signals"), where("pair", "==", pair));
         const oldDocs = await getDocs(q);
         const deletes = [];
         oldDocs.forEach(d => deletes.push(deleteDoc(doc(db, "admin_master_signals", d.id))));
         await Promise.all(deletes);
 
-        // Simpan sinyal baru
+        // Generate sinyal untuk 15s, 1m, 5m sekaligus
         const savePromises = allTimeframes.map(tf => {
           const schedule = generateTwoWeeksSchedule(tf);
           const newRef = doc(collection(db, "admin_master_signals"));
@@ -289,17 +302,18 @@
         });
 
         await Promise.all(savePromises);
-        alert(`Berhasil! Sinyal ${pair} (15s, 1m, 5m) aktif 2 minggu.`);
+        alert(`Berhasil! Sinyal ${pair} untuk semua timeframe (15s, 1m, 5m) terbit selama 2 minggu.`);
       } catch (err) {
-        console.error("Signal Generation Error:", err);
-        alert("Gagal menyimpan sinyal: " + err.message);
+        alert("Gagal mempublikasikan: " + err.message);
       } finally {
         btnPublish.disabled = false;
         btnPublish.innerText = "GENERATE ALL TIMEFRAME (2 MINGGU)";
       }
     });
 
-    // 4. Realtime Monitor Sinyal Master
+    // -------------------------------------------------------------
+    // 4. BACA MASTER SINYAL TERPUBLIKASI REALTIME
+    // -------------------------------------------------------------
     onSnapshot(collection(db, "admin_master_signals"), (snapshot) => {
       const tbody = document.getElementById("signal-master-tbody");
       tbody.innerHTML = "";
@@ -331,8 +345,6 @@
           </tr>
         `;
       });
-    }, (error) => {
-      console.error("Firestore Signal Error:", error);
     });
   </script>
 </body>
