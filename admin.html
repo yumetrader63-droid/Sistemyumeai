@@ -145,9 +145,10 @@
     
     .schedule-tag {
       display: inline-block;
-      padding: 3px 6px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 4px;
+      padding: 4px 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-dark);
+      border-radius: 6px;
       margin: 2px;
       font-size: 0.75rem;
     }
@@ -194,13 +195,13 @@
 
     </div>
 
-    <!-- KANAN: GENERATE SINYAL JADWAL KELIPATAN -->
+    <!-- KANAN: GENERATE SINYAL ACAK GACOR -->
     <div style="display: flex; flex-direction: column; gap: 20px;">
       
       <div class="card">
-        <div class="card-title">GENERATE SINYAL KELIPATAN WAKTU</div>
+        <div class="card-title">GENERATE SINYAL ACAK GACOR</div>
         <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px;">
-          Sinyal akan otomatis terbuat menjadi deret jam/menit kelipatan untuk setiap timeframe.
+          Sistem akan membuat deret jam kelipatan dengan arah BUY/SELL acak yang realistis.
         </p>
 
         <form id="form-generate-signals">
@@ -216,50 +217,27 @@
           </div>
 
           <div class="grid-3" style="margin-bottom: 14px;">
-            
-            <!-- TF 15 Detik -->
             <div class="tf-box">
               <span style="font-size: 0.75rem; color: var(--accent-green); font-weight: 800;">TIMEFRAME 15s</span>
-              <div class="form-group" style="margin-top: 8px;">
-                <label>POLA AWAL</label>
-                <select id="pattern-15s">
-                  <option value="BUY_FIRST">▲ BUY lalu ▼ SELL</option>
-                  <option value="SELL_FIRST">▼ SELL lalu ▲ BUY</option>
-                </select>
-              </div>
+              <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">5 Sinyal Acak</p>
             </div>
 
-            <!-- TF 1 Menit -->
             <div class="tf-box">
               <span style="font-size: 0.75rem; color: var(--accent-green); font-weight: 800;">TIMEFRAME 1m</span>
-              <div class="form-group" style="margin-top: 8px;">
-                <label>POLA AWAL</label>
-                <select id="pattern-1m">
-                  <option value="BUY_FIRST">▲ BUY lalu ▼ SELL</option>
-                  <option value="SELL_FIRST">▼ SELL lalu ▲ BUY</option>
-                </select>
-              </div>
+              <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">5 Sinyal Acak</p>
             </div>
 
-            <!-- TF 5 Menit -->
             <div class="tf-box">
               <span style="font-size: 0.75rem; color: var(--accent-green); font-weight: 800;">TIMEFRAME 5m</span>
-              <div class="form-group" style="margin-top: 8px;">
-                <label>POLA AWAL</label>
-                <select id="pattern-5m">
-                  <option value="BUY_FIRST">▲ BUY lalu ▼ SELL</option>
-                  <option value="SELL_FIRST">▼ SELL lalu ▲ BUY</option>
-                </select>
-              </div>
+              <p style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">5 Sinyal Acak</p>
             </div>
-
           </div>
 
-          <button type="submit" id="btn-publish" class="btn btn-green">GENERATE JADWAL SINYAL</button>
+          <button type="submit" id="btn-publish" class="btn btn-green">AUTO-GENERATE SINYAL GACOR</button>
         </form>
       </div>
 
-      <!-- CARD DAFTAR SINYAL AKTIF -->
+      <!-- DAFTAR SINYAL MASTER -->
       <div class="card">
         <div class="card-title">DAFTAR SINYAL KELIPATAN TERPUBLIKASI</div>
         <div class="table-responsive">
@@ -268,7 +246,7 @@
               <tr>
                 <th>PAIR</th>
                 <th>TF</th>
-                <th>DERET WAKTU & SINYAL</th>
+                <th>DERET WAKTU & SINYAL ACAK</th>
               </tr>
             </thead>
             <tbody id="signal-master-tbody">
@@ -286,14 +264,14 @@
     import { db } from "./firebase-config.js";
     import { collection, doc, setDoc, deleteDoc, onSnapshot, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // 1. MEMBACA & MENAMPILKAN DAFTAR USER DARI DATABASE
+    // 1. MANAJEMEN USER REALTIME
     const userTbody = document.getElementById("user-list-tbody");
     const formUser = document.getElementById("form-create-user");
 
     onSnapshot(collection(db, "users"), (snapshot) => {
       userTbody.innerHTML = "";
       if (snapshot.empty) {
-        userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--text-muted);">Belum ada user registered.</td></tr>`;
+        userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--text-muted);">Belum ada user.</td></tr>`;
         return;
       }
       snapshot.forEach(docSnap => {
@@ -309,14 +287,12 @@
       });
     });
 
-    // Hapus User
     window.deleteUser = async (uid) => {
-      if (confirm("Hapus user ini dari Firestore Database?")) {
+      if (confirm("Hapus user ini dari database?")) {
         await deleteDoc(doc(db, "users", uid));
       }
     };
 
-    // Buat User Baru
     formUser.addEventListener("submit", async (e) => {
       e.preventDefault();
       const email = document.getElementById("new-email").value;
@@ -332,25 +308,26 @@
         alert("User berhasil ditambahkan!");
         formUser.reset();
       } catch (err) {
-        alert("Gagal menambahkan user: " + err.message);
+        alert("Error: " + err.message);
       }
     });
 
-    // 2. LOGIKA GENERATE DERET WAKTU KELIPATAN
-    function generateTimeSchedule(tf, pattern) {
+    // 2. LOGIKA GENERATE POLA ACAK Cerdas (GACOR)
+    function generateSmartRandomSchedule(tf) {
       const schedule = [];
       const now = new Date();
-      let start = new Date(now);
-
-      // Tentukan interval dalam milidetik & format jam
       let stepMs = 0;
+
       if (tf === "15s") stepMs = 15 * 1000;
       else if (tf === "1m") stepMs = 60 * 1000;
       else if (tf === "5m") stepMs = 5 * 60 * 1000;
 
-      // Buat 4 deret sinyal kedepan
-      for (let i = 1; i <= 4; i++) {
-        const itemTime = new Date(start.getTime() + (i * stepMs));
+      let consecutiveCount = 0;
+      let lastDir = "";
+
+      // Membuat 5 deret sinyal ke depan
+      for (let i = 1; i <= 5; i++) {
+        const itemTime = new Date(now.getTime() + (i * stepMs));
         
         let hours = String(itemTime.getHours()).padStart(2, '0');
         let mins = String(itemTime.getMinutes()).padStart(2, '0');
@@ -358,13 +335,21 @@
         
         let timeStr = tf === "15s" ? `${hours}:${mins}:${secs}` : `${hours}:${mins}`;
 
-        // Tentukan Arah Selang-seling (Buy / Sell)
-        let direction = "";
-        if (pattern === "BUY_FIRST") {
-          direction = (i % 2 !== 0) ? "UP" : "DOWN";
+        // Randomizing arah BUY/SELL secara pintar
+        let direction = Math.random() > 0.5 ? "UP" : "DOWN";
+
+        // Mencegah pola sama muncul lebih dari 2x berturut-turut
+        if (direction === lastDir) {
+          consecutiveCount++;
+          if (consecutiveCount >= 2) {
+            direction = direction === "UP" ? "DOWN" : "UP";
+            consecutiveCount = 1;
+          }
         } else {
-          direction = (i % 2 !== 0) ? "DOWN" : "UP";
+          consecutiveCount = 1;
         }
+
+        lastDir = direction;
 
         schedule.push({
           time: timeStr,
@@ -374,54 +359,49 @@
       return schedule;
     }
 
-    // 3. GENERATE & PUBLISH SINYAL
+    // 3. PUBLISH SINYAL TO FIRESTORE
     const formSignal = document.getElementById("form-generate-signals");
     const btnPublish = document.getElementById("btn-publish");
 
     formSignal.addEventListener("submit", async (e) => {
       e.preventDefault();
       btnPublish.disabled = true;
-      btnPublish.innerText = "GENERATING...";
+      btnPublish.innerText = "GENERATING POLA GACOR...";
 
       const pair = document.getElementById("signal-pair").value;
-
-      const timeframes = [
-        { tf: "15s", pattern: document.getElementById("pattern-15s").value },
-        { tf: "1m", pattern: document.getElementById("pattern-1m").value },
-        { tf: "5m", pattern: document.getElementById("pattern-5m").value }
-      ];
+      const timeframes = ["15s", "1m", "5m"];
 
       try {
-        // Hapus sinyal master lama untuk pair ini
+        // Hapus sinyal lama pair ini
         const q = query(collection(db, "admin_master_signals"), where("pair", "==", pair));
         const oldDocs = await getDocs(q);
         const deletes = [];
         oldDocs.forEach(d => deletes.push(deleteDoc(doc(db, "admin_master_signals", d.id))));
         await Promise.all(deletes);
 
-        // Simpan sinyal kelipatan baru
-        const savePromises = timeframes.map(item => {
-          const schedule = generateTimeSchedule(item.tf, item.pattern);
+        // Simpan pola acak baru
+        const savePromises = timeframes.map(tf => {
+          const schedule = generateSmartRandomSchedule(tf);
           const newRef = doc(collection(db, "admin_master_signals"));
           return setDoc(newRef, {
             pair: pair,
-            timeframe: item.tf,
+            timeframe: tf,
             schedule: schedule,
             createdAt: serverTimestamp()
           });
         });
 
         await Promise.all(savePromises);
-        alert(`Sinyal kelipatan waktu ${pair} berhasil dipublikasikan!`);
+        alert(`Sinyal acak gacor ${pair} berhasil dipublikasikan!`);
       } catch (err) {
         alert("Gagal mempublikasikan: " + err.message);
       } finally {
         btnPublish.disabled = false;
-        btnPublish.innerText = "GENERATE JADWAL SINYAL";
+        btnPublish.innerText = "AUTO-GENERATE SINYAL GACOR";
       }
     });
 
-    // 4. MEMBACA & MENAMPILKAN SINYAL KELIPATAN AKTIF
+    // 4. BACA SINYAL TERPUBLIKASI REALTIME
     onSnapshot(collection(db, "admin_master_signals"), (snapshot) => {
       const tbody = document.getElementById("signal-master-tbody");
       tbody.innerHTML = "";
@@ -435,7 +415,7 @@
 
         if (d.schedule && Array.isArray(d.schedule)) {
           d.schedule.forEach(item => {
-            const dirIcon = item.direction === "UP" ? `<span class="dir-up">▲ BUY</span>` : `<span class="dir-down">▼ SELL</span>`;
+            const dirIcon = item.direction === "UP" ? `<b class="dir-up">▲ BUY</b>` : `<b class="dir-down">▼ SELL</b>`;
             scheduleHtml += `<span class="schedule-tag"><b>${item.time}</b> : ${dirIcon}</span> `;
           });
         }
