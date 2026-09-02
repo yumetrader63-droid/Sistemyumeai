@@ -2,80 +2,442 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yume Trading - Dashboard Member</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Yume Algorit VIP - Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --bg-dark: #050b08; --card-bg: rgba(12, 24, 18, 0.85); --card-border: rgba(16, 185, 129, 0.25);
-      --accent-neon: #00ff87; --text-main: #f0fdf4; --text-muted: #9ca3af; --red-accent: #ff4d4d;
+      --bg-dark-base: #040806;
+      --bg-dark-surface: rgba(10, 20, 15, 0.92);
+      --accent-green-main: #10b981;
+      --accent-green-neon: #00ff87;
+      --green-glow: rgba(0, 255, 135, 0.18);
+      --border-green: rgba(16, 185, 129, 0.25);
+      --text-main: #f0fdf4;
+      --text-muted: #9ca3af;
+      --red-accent: #ff4d4d;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background: var(--bg-dark); color: var(--text-main); padding: 16px; min-height: 100vh; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .btn-logout { background: rgba(255, 77, 77, 0.15); border: 1px solid var(--red-accent); color: var(--red-accent); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
-    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-    .item { background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; font-size: 0.85rem; }
-    .item label { display: block; font-size: 0.65rem; color: var(--text-muted); font-weight: 700; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 255, 135, 0.12) 0%, transparent 65%),
+        radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Card Component */
+    .card {
+      background: var(--bg-dark-surface);
+      border: 1px solid var(--border-green);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6);
+      position: relative;
+    }
+
+    /* Header Profile & Logout */
+    .header-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .status-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      color: var(--accent-green-neon);
+      letter-spacing: 0.8px;
+    }
+
+    .email-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .user-email {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .toggle-icon {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+
+    .toggle-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    .btn-logout {
+      background: rgba(255, 77, 77, 0.12);
+      border: 1px solid rgba(255, 77, 77, 0.3);
+      color: var(--red-accent);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-logout:active {
+      transform: scale(0.95);
+    }
+
+    /* Live Clock Widget */
+    .clock-card {
+      text-align: center;
+      padding: 16px;
+      background: linear-gradient(180deg, rgba(0, 255, 135, 0.05) 0%, rgba(0, 0, 0, 0.2) 100%);
+    }
+
+    .clock-title {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .clock-time {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent-green-neon);
+      text-shadow: 0 0 12px var(--green-glow);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Form Controls */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .select-control {
+      width: 100%;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-green);
+      border-radius: 12px;
+      color: var(--text-main);
+      font-size: 0.88rem;
+      font-weight: 600;
+      outline: none;
+    }
+
+    /* Timeframe Selector Grid */
+    .tf-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .tf-btn {
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-green);
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .tf-btn.active {
+      background: rgba(0, 255, 135, 0.15);
+      border-color: var(--accent-green-neon);
+      color: var(--accent-green-neon);
+      box-shadow: 0 0 10px var(--green-glow);
+    }
+
+    /* Generate Button */
+    .btn-generate {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, var(--accent-green-neon), #059669);
+      border: none;
+      border-radius: 12px;
+      color: #022c22;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 8px;
+      box-shadow: 0 0 16px var(--green-glow);
+      transition: transform 0.2s ease;
+    }
+
+    .btn-generate:active {
+      transform: scale(0.98);
+    }
+
+    /* Signal Display Result */
+    .signal-result {
+      margin-top: 14px;
+      display: none;
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px dashed var(--accent-green-neon);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .signal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .signal-type {
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .type-buy { background: rgba(0, 255, 135, 0.2); color: var(--accent-green-neon); }
+    .type-sell { background: rgba(255, 77, 77, 0.2); color: var(--red-accent); }
+
+    .signal-details {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+
+    .detail-item {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 8px;
+      border-radius: 8px;
+    }
+
+    .detail-item span {
+      display: block;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+    }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <span style="color:var(--accent-neon); font-size:0.8rem; font-weight:800;">🟢 VIP MEMBER ACTIVE</span>
-    <button id="btn-logout" class="btn-logout">LOGOUT</button>
-  </div>
+  <div class="container">
+    <!-- Header / User Info -->
+    <div class="card header-card">
+      <div class="user-info">
+        <span class="status-badge">🟢 VIP MEMBER ACTIVE</span>
+        <div class="email-wrapper">
+          <span id="user-email-text" class="user-email">loading...</span>
+          <button id="toggle-email" class="toggle-icon" title="Sembunyikan/Tampilkan Email">
+            <svg id="eye-email-icon" viewBox="0 0 24 24">
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <button id="btn-logout" class="btn-logout">LOGOUT</button>
+    </div>
 
-  <h3 style="margin-bottom: 12px; color:var(--accent-neon);">📈 Sinyal Trading Real-Time</h3>
-  <div id="signals-container">Memuat sinyal...</div>
+    <!-- Live Clock Widget -->
+    <div class="card clock-card">
+      <div class="clock-title">WAKTU REAL-TIME (SERVER)</div>
+      <div id="live-clock" class="clock-time">00:00:00</div>
+    </div>
+
+    <!-- Signal Control Panel -->
+    <div class="card">
+      <div class="form-group">
+        <label>PILIH PAIR TRADING</label>
+        <select id="pair-select" class="select-control">
+          <option value="BTC/USDT">BTC / USDT</option>
+          <option value="ETH/USDT">ETH / USDT</option>
+          <option value="SOL/USDT">SOL / USDT</option>
+          <option value="XRP/USDT">XRP / USDT</option>
+          <option value="EUR/USD">EUR / USD (Forex)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>PILIH TIMEFRAME</label>
+        <div class="tf-grid">
+          <button class="tf-btn active" data-tf="15s">15 Detik</button>
+          <button class="tf-btn" data-tf="1m">1 Menit</button>
+          <button class="tf-btn" data-tf="5m">5 Menit</button>
+        </div>
+      </div>
+
+      <button id="btn-generate" class="btn-generate">GENERATE SIGNAL</button>
+
+      <!-- Tempat Output Hasil Signal -->
+      <div id="signal-result" class="signal-result">
+        <div class="signal-header">
+          <b id="res-pair" style="font-size: 1rem;">BTC/USDT</b>
+          <span id="res-type" class="signal-type type-buy">BUY / LONG</span>
+        </div>
+        <div class="signal-details">
+          <div class="detail-item"><span>ENTRY</span><b id="res-entry">-</b></div>
+          <div class="detail-item"><span>TARGET TP</span><b id="res-tp" style="color:var(--accent-green-neon);">-</b></div>
+          <div class="detail-item"><span>STOP LOSS</span><b id="res-sl" style="color:var(--red-accent);">-</b></div>
+          <div class="detail-item"><span>TIMEFRAME</span><b id="res-tf">-</b></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script type="module">
     import { auth, db } from "./firebase-config.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { collection, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // PROTEKSI: Cek Autentikasi Firebase Server-Side
+    let rawEmail = "";
+    let isEmailHidden = false;
+    let selectedTimeframe = "15s";
+
+    // 1. Check Auth State
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        window.location.href = "index.html"; // Tendang jika belum login
+        window.location.href = "index.html";
       } else {
-        loadSignals();
+        rawEmail = user.email;
+        updateEmailDisplay();
       }
     });
 
-    // Ambil Sinyal Realtime dari Firestore
-    function loadSignals() {
-      const q = query(collection(db, "signals"), orderBy("createdAt", "desc"));
-      onSnapshot(q, (snapshot) => {
-        const container = document.getElementById("signals-container");
-        container.innerHTML = "";
+    // 2. Hide / Show Email Feature
+    const emailText = document.getElementById("user-email-text");
+    const toggleEmailBtn = document.getElementById("toggle-email");
 
-        if (snapshot.empty) {
-          container.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>Belum ada sinyal aktif.</p>";
-          return;
-        }
-
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          container.innerHTML += `
-            <div class="card">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <b style="font-size: 1.1rem;">${data.pair}</b>
-                <span style="color:${data.type === 'BUY / LONG' ? 'var(--accent-neon)' : 'var(--red-accent)'}; font-size: 0.75rem; font-weight:800;">${data.type}</span>
-              </div>
-              <div class="grid">
-                <div class="item"><label>ENTRY</label>${data.entry}</div>
-                <div class="item"><label>TARGET TP</label><span style="color:var(--accent-neon);">${data.tp}</span></div>
-                <div class="item"><label>STOP LOSS</label><span style="color:var(--red-accent);">${data.sl}</span></div>
-                <div class="item"><label>LEVERAGE</label>${data.leverage}</div>
-              </div>
-            </div>
-          `;
-        });
-      });
+    function updateEmailDisplay() {
+      if (isEmailHidden) {
+        const parts = rawEmail.split("@");
+        emailText.innerText = parts[0].substring(0, 2) + "***@" + parts[1];
+      } else {
+        emailText.innerText = rawEmail;
+      }
     }
 
+    toggleEmailBtn.addEventListener("click", () => {
+      isEmailHidden = !isEmailHidden;
+      updateEmailDisplay();
+    });
+
+    // 3. Realtime Clock (Jam, Menit, Detik)
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById("live-clock").innerText = `${h}:${m}:${s}`;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // 4. Timeframe Selector
+    const tfButtons = document.querySelectorAll(".tf-btn");
+    tfButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tfButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        selectedTimeframe = btn.getAttribute("data-tf");
+      });
+    });
+
+    // 5. Generate Signal Logic (Mengambil data dari Firestore)
+    const btnGenerate = document.getElementById("btn-generate");
+    const signalResult = document.getElementById("signal-result");
+
+    btnGenerate.addEventListener("click", async () => {
+      const selectedPair = document.getElementById("pair-select").value;
+      
+      btnGenerate.innerText = "ANALYSIS IN PROGRESS...";
+      btnGenerate.disabled = true;
+
+      try {
+        // Ambil sinyal terbaru dari database Firebase yang diinput Admin
+        const q = query(
+          collection(db, "signals"),
+          where("pair", "==", selectedPair),
+          orderBy("createdAt", "desc"),
+          limit(1)
+        );
+
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+          const signalData = querySnapshot.docs[0].data();
+          
+          document.getElementById("res-pair").innerText = signalData.pair;
+          
+          const resType = document.getElementById("res-type");
+          resType.innerText = signalData.type;
+          resType.className = `signal-type ${signalData.type.includes("BUY") ? "type-buy" : "type-sell"}`;
+
+          document.getElementById("res-entry").innerText = signalData.entry;
+          document.getElementById("res-tp").innerText = signalData.tp;
+          document.getElementById("res-sl").innerText = signalData.sl;
+          document.getElementById("res-tf").innerText = selectedTimeframe.toUpperCase();
+
+          signalResult.style.display = "block";
+        } else {
+          alert(`Belum ada sinyal aktif untuk pair ${selectedPair} dari Admin.`);
+          signalResult.style.display = "none";
+        }
+      } catch (err) {
+        alert("Gagal mengambil data sinyal: " + err.message);
+      } finally {
+        btnGenerate.innerText = "GENERATE SIGNAL";
+        btnGenerate.disabled = false;
+      }
+    });
+
+    // 6. Logout Functionality
     document.getElementById("btn-logout").addEventListener("click", () => {
       signOut(auth).then(() => window.location.href = "index.html");
     });
