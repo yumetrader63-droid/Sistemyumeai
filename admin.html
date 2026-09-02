@@ -3,159 +3,468 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - Master Signal Generator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <title>Admin Panel - Yume Algorit VIP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --bg-canvas: #0b0e11;
-      --bg-card: #151a21;
-      --bg-input: #1e242d;
+      --bg-canvas: #090c0f;
+      --bg-card: #14181f;
+      --bg-input: #1d232c;
       --accent-green: #00e676;
+      --green-glow: rgba(0, 230, 118, 0.2);
       --red-trade: #ff5252;
-      --border-dark: #262c36;
+      --border-dark: #232933;
       --text-main: #ffffff;
       --text-muted: #848e9c;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background-color: var(--bg-canvas); color: var(--text-main); display: flex; justify-content: center; padding: 20px; }
-    .admin-container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
-    .card { background: var(--bg-card); border: 1px solid var(--border-dark); border-radius: 12px; padding: 20px; }
-    h2 { font-size: 1.1rem; color: var(--accent-green); margin-bottom: 16px; font-weight: 800; }
-    .form-group { margin-bottom: 14px; }
-    label { display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; }
-    select, input { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-dark); border-radius: 8px; color: var(--text-main); font-weight: 700; }
-    .btn-submit { width: 100%; padding: 14px; background: var(--accent-green); border: none; border-radius: 8px; font-weight: 800; cursor: pointer; color: #000; margin-top: 10px; }
-    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-    .signal-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-    .signal-item { background: var(--bg-input); border: 1px solid var(--border-dark); padding: 10px; border-radius: 6px; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    /* Peringatan Layar HP */
+    .mobile-blocker {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--bg-canvas);
+      z-index: 99999;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 24px;
+    }
+
+    .mobile-blocker h2 {
+      color: var(--red-trade);
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 900px) {
+      .mobile-blocker { display: flex; }
+      .admin-layout { display: none !important; }
+    }
+
+    /* Layout Desktop Grid */
+    .admin-layout {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-dark);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--accent-green);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Form Styles */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-dark);
+      border-radius: 8px;
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-green);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-green { background: var(--accent-green); color: #000; }
+    .btn-red { background: rgba(255, 82, 82, 0.15); color: var(--red-trade); border: 1px solid var(--red-trade); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Tables */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 12px;
+      background: var(--bg-input);
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-weight: 800;
+      border-bottom: 1px solid var(--border-dark);
+    }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-dark);
+      font-weight: 700;
+    }
+
+    /* Signal Indicators */
+    .dir-up { color: var(--accent-green); font-size: 1.1rem; }
+    .dir-down { color: var(--red-trade); font-size: 1.1rem; }
+
+    /* Grid Sub-Cards */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .tf-box {
+      background: var(--bg-input);
+      border: 1px solid var(--border-dark);
+      border-radius: 8px;
+      padding: 12px;
+    }
   </style>
 </head>
 <body>
 
-  <div class="admin-container">
-    <div class="card">
-      <h2>ADMIN MASTER SIGNAL GENERATOR</h2>
-      <form id="admin-signal-form">
-        <div class="form-group">
-          <label>SELECT PAIR</label>
-          <select id="admin-pair">
-            <option value="BTC/USDT">BTC/USDT</option>
-            <option value="ETH/USDT">ETH/USDT</option>
-            <option value="SOL/USDT">SOL/USDT</option>
-            <option value="EUR/USD">EUR/USD</option>
-            <option value="GBP/USD">GBP/USD</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>SIGNAL DIRECTION</label>
-          <select id="admin-type">
-            <option value="BUY">BUY / UP</option>
-            <option value="SELL">SELL / DOWN</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>ENTRY PRICE</label>
-          <input type="text" id="admin-entry" placeholder="Contoh: 65200.50" required>
-        </div>
-
-        <div class="form-group">
-          <label>TARGET TAKE PROFIT (TP)</label>
-          <input type="text" id="admin-tp" placeholder="Contoh: 65800.00" required>
-        </div>
-
-        <div class="form-group">
-          <label>STOP LOSS (SL)</label>
-          <input type="text" id="admin-sl" placeholder="Contoh: 64900.00" required>
-        </div>
-
-        <button type="submit" id="btn-save-signal" class="btn-submit">PUBLISH SIGNAL (REPLACE OLD)</button>
-      </form>
+  <!-- Block Khusus HP -->
+  <div class="mobile-blocker">
+    <div>
+      <h2>AKSES DITOLAK</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Dashboard Admin hanya dapat diakses melalui Laptop, Tablet, atau Desktop layar lebar.</p>
     </div>
+  </div>
 
-    <div class="card">
-      <h2>ACTIVE ADMIN SIGNALS (2 WEEKS VALID)</h2>
-      <div id="active-signals-list" class="signal-list">
-        <span style="color: var(--text-muted); font-size: 0.8rem;">Loading...</span>
+  <!-- Layout Desktop -->
+  <div class="admin-layout">
+    
+    <!-- KOLOM KIRI: MANAJEMEN USER -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      
+      <!-- Card Tambah User -->
+      <div class="card">
+        <div class="card-title">BUAT USER BARU</div>
+        <form id="form-create-user">
+          <div class="form-group">
+            <label>EMAIL USER</label>
+            <input type="email" id="new-email" placeholder="user@vip.com" required>
+          </div>
+          <div class="form-group">
+            <label>PASSWORD</label>
+            <input type="password" id="new-password" placeholder="Minimal 6 karakter" required>
+          </div>
+          <button type="submit" id="btn-add-user" class="btn btn-green">TAMBAH USER</button>
+        </form>
       </div>
+
+      <!-- Card List User -->
+      <div class="card">
+        <div class="card-title">DAFTAR USER</div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>EMAIL</th>
+                <th>AKSI</th>
+              </tr>
+            </thead>
+            <tbody id="user-list-tbody">
+              <tr><td colspan="2" style="color: var(--text-muted);">Memuat...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
+
+    <!-- KOLOM KANAN: GENERATE SINYAL PAIR -->
+    <div style="display: flex; flex-direction: column; gap: 24px;">
+      
+      <!-- Card Generator Sinyal Multi-TF -->
+      <div class="card">
+        <div class="card-title">GENERATE ALL TIMEFRAME SIGNALS</div>
+        <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 16px;">
+          Memilih Pair akan membuat 3 sinyal sekaligus (15s, 1m, 5m). Sinyal lama pada pair ini akan otomatis ditimpa.
+        </p>
+
+        <form id="form-generate-signals">
+          <div class="form-group">
+            <label>PILIH PAIR ASSET</label>
+            <select id="signal-pair">
+              <option value="BTC/USDT">BTC/USDT</option>
+              <option value="ETH/USDT">ETH/USDT</option>
+              <option value="SOL/USDT">SOL/USDT</option>
+              <option value="EUR/USD">EUR/USD</option>
+              <option value="GBP/USD">GBP/USD</option>
+            </select>
+          </div>
+
+          <!-- Input Manual atau Auto Generator Parameter Sinyal -->
+          <div class="grid-3" style="margin-bottom: 14px;">
+            <div class="tf-box">
+              <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800;">TIMEFRAME 15s (2 JAM)</span>
+              <div class="form-group" style="margin-top: 8px;">
+                <label>ARAH</label>
+                <select id="dir-15s"><option value="UP">▲ BUY</option><option value="DOWN">▼ SELL</option></select>
+              </div>
+              <div class="form-group"><label>ENTRY</label><input type="text" id="entry-15s" placeholder="65200" required></div>
+              <div class="form-group"><label>TP</label><input type="text" id="tp-15s" placeholder="65800" required></div>
+              <div class="form-group"><label>SL</label><input type="text" id="sl-15s" placeholder="64900" required></div>
+            </div>
+
+            <div class="tf-box">
+              <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800;">TIMEFRAME 1m (4 JAM)</span>
+              <div class="form-group" style="margin-top: 8px;">
+                <label>ARAH</label>
+                <select id="dir-1m"><option value="UP">▲ BUY</option><option value="DOWN">▼ SELL</option></select>
+              </div>
+              <div class="form-group"><label>ENTRY</label><input type="text" id="entry-1m" placeholder="65200" required></div>
+              <div class="form-group"><label>TP</label><input type="text" id="tp-1m" placeholder="66000" required></div>
+              <div class="form-group"><label>SL</label><input type="text" id="sl-1m" placeholder="64800" required></div>
+            </div>
+
+            <div class="tf-box">
+              <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800;">TIMEFRAME 5m (8 JAM)</span>
+              <div class="form-group" style="margin-top: 8px;">
+                <label>ARAH</label>
+                <select id="dir-5m"><option value="UP">▲ BUY</option><option value="DOWN">▼ SELL</option></select>
+              </div>
+              <div class="form-group"><label>ENTRY</label><input type="text" id="entry-5m" placeholder="65200" required></div>
+              <div class="form-group"><label>TP</label><input type="text" id="tp-5m" placeholder="66500" required></div>
+              <div class="form-group"><label>SL</label><input type="text" id="sl-5m" placeholder="64500" required></div>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-publish" class="btn btn-green">PUBLIKASIKAN SEMUA TIMEFRAME</button>
+        </form>
+      </div>
+
+      <!-- Card Sinyal Aktif Master -->
+      <div class="card">
+        <div class="card-title">SINYAL MASTER AKTIF DI DATABASE</div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>PAIR</th>
+                <th>TF</th>
+                <th>ARAH</th>
+                <th>ENTRY</th>
+                <th>TP</th>
+                <th>SL</th>
+                <th>EXPIRED</th>
+              </tr>
+            </thead>
+            <tbody id="signal-master-tbody">
+              <tr><td colspan="7" style="color: var(--text-muted);">Memuat sinyal...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
   </div>
 
   <script type="module">
     import { db } from "./firebase-config.js";
-    import { collection, query, where, getDocs, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { collection, doc, setDoc, deleteDoc, onSnapshot, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const form = document.getElementById("admin-signal-form");
-    const btnSave = document.getElementById("btn-save-signal");
+    // 1. MANAJEMEN USER (Firestore Document List)
+    const userTbody = document.getElementById("user-list-tbody");
+    const formUser = document.getElementById("form-create-user");
 
-    // Load Live Active Admin Signals
-    onSnapshot(collection(db, "admin_master_signals"), (snapshot) => {
-      const container = document.getElementById("active-signals-list");
-      container.innerHTML = "";
+    onSnapshot(collection(db, "users"), (snapshot) => {
+      userTbody.innerHTML = "";
       if (snapshot.empty) {
-        container.innerHTML = `<span style="color: var(--text-muted); font-size: 0.8rem;">Belum ada sinyal aktif.</span>`;
+        userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--text-muted);">Belum ada user registered.</td></tr>`;
         return;
       }
       snapshot.forEach(docSnap => {
-        const data = docSnap.data();
-        const expDate = new Date(data.adminExpiryMs).toLocaleDateString("id-ID");
-        container.innerHTML += `
-          <div class="signal-item">
-            <div>
-              <b>${data.pair}</b> - <span style="color:${data.type === 'BUY' ? 'var(--accent-green)' : 'var(--red-trade)'}">${data.type}</span><br>
-              <small style="color:var(--text-muted)">Entry: ${data.entry} | TP: ${data.tp} | SL: ${data.sl}</small>
-            </div>
-            <small style="color:var(--text-muted)">Exp: ${expDate}</small>
-          </div>
+        const u = docSnap.data();
+        userTbody.innerHTML += `
+          <tr>
+            <td>${u.email}</td>
+            <td>
+              <button class="btn btn-red" style="padding:4px 8px; font-size:0.7rem;" onclick="deleteUser('${docSnap.id}')">Hapus</button>
+            </td>
+          </tr>
         `;
       });
     });
 
-    // Handle Publish Signal (Hapus Lama -> Simpan Baru)
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      btnSave.disabled = true;
-      btnSave.innerText = "PROCESSING...";
+    window.deleteUser = async (uid) => {
+      if (confirm("Hapus user ini dari database?")) {
+        await deleteDoc(doc(db, "users", uid));
+      }
+    };
 
-      const pair = document.getElementById("admin-pair").value;
-      const type = document.getElementById("admin-type").value;
-      const entry = document.getElementById("admin-entry").value;
-      const tp = document.getElementById("admin-tp").value;
-      const sl = document.getElementById("admin-sl").value;
+    formUser.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("new-email").value;
+      const pwd = document.getElementById("new-password").value;
 
       try {
-        // 1. Cari & Hapus Sinyal Lama untuk Pair yang Sama
-        const q = query(collection(db, "admin_master_signals"), where("pair", "==", pair));
-        const oldDocs = await getDocs(q);
-        const deletePromises = [];
-        oldDocs.forEach(d => deletePromises.push(deleteDoc(doc(db, "admin_master_signals", d.id))));
-        await Promise.all(deletePromises);
-
-        // 2. Set Expired 2 Minggu (14 Hari)
-        const now = new Date();
-        const twoWeeksMs = now.getTime() + (14 * 24 * 60 * 60 * 1000);
-
-        // 3. Simpan Sinyal Master Baru
-        const docRef = doc(collection(db, "admin_master_signals"));
-        await setDoc(docRef, {
-          pair: pair,
-          type: type,
-          entry: entry,
-          tp: tp,
-          sl: sl,
-          adminExpiryMs: twoWeeksMs,
+        const newUserRef = doc(collection(db, "users"));
+        await setDoc(newUserRef, {
+          email: email,
+          password: pwd,
           createdAt: serverTimestamp()
         });
-
-        alert(`Sinyal ${pair} berhasil dipublikasikan & menggantikan sinyal lama!`);
-        form.reset();
+        alert("User berhasil didaftarkan ke Database!");
+        formUser.reset();
       } catch (err) {
-        alert("Gagal menyimpan sinyal: " + err.message);
-      } finally {
-        btnSave.disabled = false;
-        btnSave.innerText = "PUBLISH SIGNAL (REPLACE OLD)";
+        alert("Error: " + err.message);
       }
+    });
+
+    // 2. GENERATE ALL TIMEFRAMES FOR SELECTED PAIR
+    const formSignal = document.getElementById("form-generate-signals");
+    const btnPublish = document.getElementById("btn-publish");
+
+    formSignal.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      btnPublish.disabled = true;
+      btnPublish.innerText = "PUBLISHING...";
+
+      const pair = document.getElementById("signal-pair").value;
+      const nowMs = new Date().getTime();
+      const twoWeeksMs = nowMs + (14 * 24 * 60 * 60 * 1000); // Bertahan 2 Minggu di Master DB
+
+      const timeframes = [
+        {
+          tf: "15s",
+          durationHours: 2,
+          dir: document.getElementById("dir-15s").value,
+          entry: document.getElementById("entry-15s").value,
+          tp: document.getElementById("tp-15s").value,
+          sl: document.getElementById("sl-15s").value,
+        },
+        {
+          tf: "1m",
+          durationHours: 4,
+          dir: document.getElementById("dir-1m").value,
+          entry: document.getElementById("entry-1m").value,
+          tp: document.getElementById("tp-1m").value,
+          sl: document.getElementById("sl-1m").value,
+        },
+        {
+          tf: "5m",
+          durationHours: 8,
+          dir: document.getElementById("dir-5m").value,
+          entry: document.getElementById("entry-5m").value,
+          tp: document.getElementById("tp-5m").value,
+          sl: document.getElementById("sl-5m").value,
+        }
+      ];
+
+      try {
+        // Hapus sinyal lama untuk pair tersebut
+        const q = query(collection(db, "admin_master_signals"), where("pair", "==", pair));
+        const oldDocs = await getDocs(q);
+        const deletes = [];
+        oldDocs.forEach(d => deletes.push(deleteDoc(doc(db, "admin_master_signals", d.id))));
+        await Promise.all(deletes);
+
+        // Simpan 3 sinyal baru sekaligus
+        const savePromises = timeframes.map(item => {
+          const newRef = doc(collection(db, "admin_master_signals"));
+          return setDoc(newRef, {
+            pair: pair,
+            timeframe: item.tf,
+            direction: item.dir,
+            entry: item.entry,
+            tp: item.tp,
+            sl: item.sl,
+            durationHours: item.durationHours,
+            adminExpiryMs: twoWeeksMs,
+            createdAt: serverTimestamp()
+          });
+        });
+
+        await Promise.all(savePromises);
+        alert(`Sinyal untuk ${pair} (15s, 1m, 5m) berhasil dipublikasikan!`);
+      } catch (err) {
+        alert("Gagal mempublikasikan: " + err.message);
+      } finally {
+        btnPublish.disabled = false;
+        btnPublish.innerText = "PUBLIKASIKAN SEMUA TIMEFRAME";
+      }
+    });
+
+    // 3. LISTEN & DISPLAY MASTER SIGNALS
+    onSnapshot(collection(db, "admin_master_signals"), (snapshot) => {
+      const tbody = document.getElementById("signal-master-tbody");
+      tbody.innerHTML = "";
+      if (snapshot.empty) {
+        tbody.innerHTML = `<tr><td colspan="7" style="color:var(--text-muted);">Belum ada sinyal terpublikasi.</td></tr>`;
+        return;
+      }
+      snapshot.forEach(docSnap => {
+        const d = docSnap.data();
+        const dirSymbol = d.direction === "UP" ? `<b class="dir-up">▲ BUY</b>` : `<b class="dir-down">▼ SELL</b>`;
+        const exp = new Date(d.adminExpiryMs).toLocaleDateString("id-ID");
+        tbody.innerHTML += `
+          <tr>
+            <td><b>${d.pair}</b></td>
+            <td>${d.timeframe}</td>
+            <td>${dirSymbol}</td>
+            <td>${d.entry}</td>
+            <td>${d.tp}</td>
+            <td>${d.sl}</td>
+            <td style="color:var(--text-muted);">${exp}</td>
+          </tr>
+        `;
+      });
     });
   </script>
 </body>
