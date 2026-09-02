@@ -2,44 +2,192 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yume Trading VIP - Login</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Yume Algorit VIP - Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --bg-dark: #050b08; --card-bg: rgba(12, 24, 18, 0.85); --card-border: rgba(16, 185, 129, 0.25);
-      --accent-neon: #00ff87; --text-main: #f0fdf4; --text-muted: #9ca3af; --red-accent: #ff4d4d;
+      --bg-dark: #050b08;
+      --card-bg: rgba(12, 24, 18, 0.88);
+      --card-border: rgba(16, 185, 129, 0.25);
+      --accent-neon: #00ff87;
+      --accent-green: #10b981;
+      --neon-glow: rgba(0, 255, 135, 0.15);
+      --text-main: #f0fdf4;
+      --text-muted: #9ca3af;
+      --red-accent: #ff4d4d;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 16px; }
-    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 24px; width: 100%; max-width: 380px; }
-    .title { text-align: center; margin-bottom: 20px; }
-    .title h2 { color: var(--accent-neon); font-size: 1.4rem; }
-    .form-group { margin-bottom: 14px; }
-    .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; margin-bottom: 4px; }
-    .form-control { width: 100%; padding: 12px; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); border-radius: 10px; color: #fff; outline: none; }
-    .btn-submit { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--accent-neon), #059669); border: none; border-radius: 10px; color: #022c22; font-weight: 800; cursor: pointer; margin-top: 10px; }
-    .alert-error { background: rgba(255, 77, 77, 0.15); border: 1px solid var(--red-accent); color: var(--red-accent); padding: 10px; border-radius: 8px; font-size: 0.8rem; text-align: center; margin-bottom: 12px; display: none; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 255, 135, 0.15) 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+      background-attachment: fixed;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 30px 24px;
+      width: 100%;
+      max-width: 390px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-neon), transparent);
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0, 255, 135, 0.08);
+      border: 1px solid rgba(0, 255, 135, 0.3);
+      padding: 4px 12px;
+      border-radius: 30px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--accent-neon);
+      letter-spacing: 0.8px;
+      margin-bottom: 12px;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .title h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #ffffff, var(--accent-neon));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 0.5px;
+    }
+
+    .title p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 13px 15px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent-neon);
+      box-shadow: 0 0 12px var(--neon-glow);
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, var(--accent-neon), #059669);
+      border: none;
+      border-radius: 12px;
+      color: #022c22;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 8px;
+      box-shadow: 0 0 16px var(--neon-glow);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-submit:active {
+      transform: scale(0.98);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .alert-error {
+      background: rgba(255, 77, 77, 0.15);
+      border: 1px solid var(--red-accent);
+      color: var(--red-accent);
+      padding: 11px;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      text-align: center;
+      margin-bottom: 16px;
+      display: none;
+    }
   </style>
 </head>
 <body>
 
   <div class="card">
     <div class="title">
-      <h2>YUME TRADING VIP</h2>
-      <p style="font-size:0.8rem; color:var(--text-muted);">Masuk ke Dashboard Sistem</p>
+      <div class="brand-badge">SYSTEM ACCESS</div>
+      <h2>YUME ALGORIT VIP</h2>
+      <p>Masuk ke Portal Signal & Analytics</p>
     </div>
+
     <div id="error-msg" class="alert-error"></div>
+
     <form id="login-form">
       <div class="form-group">
-        <label>EMAIL</label>
-        <input type="email" id="email" class="form-control" required placeholder="user@domain.com">
+        <label>EMAIL AKUN</label>
+        <input type="email" id="email" class="form-control" required placeholder="nama@domain.com" autocomplete="email">
       </div>
       <div class="form-group">
         <label>PASSWORD</label>
-        <input type="password" id="password" class="form-control" required placeholder="••••••••">
+        <input type="password" id="password" class="form-control" required placeholder="••••••••" autocomplete="current-password">
       </div>
-      <button type="submit" id="btn-login" class="btn-submit">LOGIN</button>
+      <button type="submit" id="btn-login" class="btn-submit">LOGIN SEKARANG</button>
     </form>
   </div>
 
@@ -47,30 +195,61 @@
     import { auth } from "./firebase-config.js";
     import { signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-    // Cek jika sudah login sebelumnya
+    // 💡 MASUKKAN EMAIL ADMIN ANDA DI SINI
+    const ADMIN_EMAIL = "yumetrader63@gmail.com";
+
+    // Redireksi otomatis jika session pengguna masih aktif
     onAuthStateChanged(auth, (user) => {
-      if (user) window.location.href = "dashboard.html";
+      if (user) {
+        if (user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+          window.location.href = "admin.html";
+        } else {
+          window.location.href = "dashboard.html";
+        }
+      }
     });
 
-    document.getElementById("login-form").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      const btn = document.getElementById("btn-login");
-      const err = document.getElementById("error-msg");
+    const loginForm = document.getElementById("login-form");
+    const errorMsg = document.getElementById("error-msg");
+    const btnLogin = document.getElementById("btn-login");
 
-      err.style.display = "none";
-      btn.innerText = "MEMPROSES...";
-      btn.disabled = true;
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      errorMsg.style.display = "none";
+      btnLogin.innerText = "MEMERIKSA HAK AKSES...";
+      btnLogin.disabled = true;
 
       try {
-        await signInWithEmailAndPassword(auth, email, password);
-        window.location.href = "dashboard.html";
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Pengecekan Role Pengguna
+        if (user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+          window.location.href = "admin.html";
+        } else {
+          window.location.href = "dashboard.html";
+        }
       } catch (error) {
-        btn.innerText = "LOGIN";
-        btn.disabled = false;
-        err.style.display = "block";
-        err.innerText = "Email atau Password Salah!";
+        btnLogin.innerText = "LOGIN SEKARANG";
+        btnLogin.disabled = false;
+        errorMsg.style.display = "block";
+
+        switch (error.code) {
+          case 'auth/invalid-credential':
+          case 'auth/user-not-found':
+          case 'auth/wrong-password':
+            errorMsg.innerText = "Email atau Password tidak valid!";
+            break;
+          case 'auth/too-many-requests':
+            errorMsg.innerText = "Terlalu banyak percobaan. Silakan coba lagi nanti.";
+            break;
+          default:
+            errorMsg.innerText = "Gagal masuk: " + error.message;
+        }
       }
     });
   </script>
