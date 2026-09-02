@@ -18,8 +18,6 @@
       --red-trade: #ff5252;
       
       --border-dark: #262c36;
-      --border-accent: #00e676;
-      
       --text-main: #ffffff;
       --text-muted: #848e9c;
     }
@@ -48,12 +46,6 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      animation: containerFadeIn 0.5s ease-out;
-    }
-
-    @keyframes containerFadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     /* Base Card Style */
@@ -180,7 +172,6 @@
       margin-bottom: 6px;
     }
 
-    /* Trigger Trigger Asset Selector (Modern Popup Trigger) */
     .asset-selector-trigger {
       width: 100%;
       padding: 12px 14px;
@@ -192,22 +183,8 @@
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
-      transition: border-color 0.2s ease;
     }
 
-    .asset-selector-trigger:hover {
-      border-color: var(--accent-green);
-    }
-
-    .selected-asset-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-weight: 800;
-      font-size: 0.9rem;
-    }
-
-    /* Timeframe Grid */
     .tf-selector {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -234,7 +211,6 @@
       box-shadow: 0 0 12px var(--green-glow);
     }
 
-    /* Generate Button */
     .btn-execute {
       width: 100%;
       padding: 14px;
@@ -245,12 +221,6 @@
       font-weight: 800;
       font-size: 0.95rem;
       cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .btn-execute:hover {
-      background: var(--accent-green-hover);
-      box-shadow: 0 0 16px var(--green-glow);
     }
 
     .btn-execute:disabled {
@@ -259,26 +229,50 @@
       cursor: not-allowed;
     }
 
-    /* KOTAK SIGNAL TERPISAH (Terpisah dari Panel) */
-    .signal-container-card {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .signal-box {
+    /* KOTAK SIGNAL TUNGGAL */
+    .signal-single-card {
       background: var(--bg-card);
       border: 1px solid var(--border-dark);
       border-radius: 12px;
-      padding: 14px;
-      animation: signalPopUp 0.3s ease-out;
+      padding: 16px;
+      min-height: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
-    @keyframes signalPopUp {
-      from { opacity: 0; transform: scale(0.97); }
-      to { opacity: 1; transform: scale(1); }
+    /* Tampilan saat belum ada sinyal */
+    .empty-signal-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 0;
     }
 
+    .question-mark {
+      font-size: 3.2rem;
+      font-weight: 800;
+      color: var(--accent-green);
+      text-shadow: 0 0 16px var(--green-glow);
+      line-height: 1;
+      animation: questionPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes questionPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .empty-text {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    /* Tampilan detail sinyal aktif */
     .signal-header {
       display: flex;
       justify-content: space-between;
@@ -322,40 +316,7 @@
 
     .grid-item b { font-size: 0.85rem; }
 
-    /* Empty Signal Box dengan Icon ? */
-    .empty-signal-box {
-      min-height: 130px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      background: var(--bg-card);
-      border: 1px dashed var(--border-dark);
-      border-radius: 12px;
-      padding: 16px;
-    }
-
-    .question-mark {
-      font-size: 2.8rem;
-      font-weight: 800;
-      color: var(--accent-green);
-      text-shadow: 0 0 16px var(--green-glow);
-      animation: floatQuestion 2s ease-in-out infinite;
-    }
-
-    @keyframes floatQuestion {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
-    }
-
-    .empty-text {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--text-muted);
-    }
-
-    /* MODAL POPUP SELECT ASSET (Olymp Trade Style) */
+    /* MODAL POPUP SELECT ASSET */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -364,7 +325,7 @@
       display: none;
       justify-content: center;
       align-items: center;
-      z-index: 999;
+      z-index: 9999;
       padding: 16px;
     }
 
@@ -378,7 +339,6 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
-      max-height: 80vh;
     }
 
     .modal-header {
@@ -401,7 +361,6 @@
       display: flex;
       flex-direction: column;
       gap: 8px;
-      overflow-y: auto;
     }
 
     .asset-item {
@@ -413,12 +372,10 @@
       justify-content: space-between;
       align-items: center;
       cursor: pointer;
-      transition: all 0.2s ease;
     }
 
     .asset-item:hover {
       border-color: var(--accent-green);
-      background: rgba(0, 230, 118, 0.05);
     }
 
     .asset-name { font-weight: 800; font-size: 0.88rem; }
@@ -456,74 +413,54 @@
       <span class="user-label">ACCOUNT</span>
       <div class="email-wrapper">
         <span id="user-email-text" class="user-email">loading...</span>
-        <button id="toggle-email" class="btn-icon">
+        <button id="toggle-email" class="btn-icon" type="button">
           <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- 3. KOTAK CONTROL PANEL (Terpisah) -->
+    <!-- 3. KOTAK CONTROL PANEL -->
     <div class="card-base panel-card">
       <div>
         <span class="panel-label">SELECT ASSET</span>
         <div id="open-asset-modal" class="asset-selector-trigger">
-          <div class="selected-asset-info">
-            <span id="current-asset-text">BTC/USDT</span>
-          </div>
-          <span style="color: var(--accent-green); font-size: 0.8rem;">CHANGE ▼</span>
+          <span id="current-asset-text" style="font-weight: 800;">BTC/USDT</span>
+          <span style="color: var(--accent-green); font-size: 0.8rem; font-weight: 700;">CHANGE ▼</span>
         </div>
       </div>
 
       <div>
         <span class="panel-label">TIMEFRAME</span>
         <div class="tf-selector">
-          <button class="tf-btn active" data-tf="15s">15 DETIK</button>
-          <button class="tf-btn" data-tf="1m">1 MENIT</button>
-          <button class="tf-btn" data-tf="5m">5 MENIT</button>
+          <button type="button" class="tf-btn active" data-tf="15s">15 DETIK</button>
+          <button type="button" class="tf-btn" data-tf="1m">1 MENIT</button>
+          <button type="button" class="tf-btn" data-tf="5m">5 MENIT</button>
         </div>
       </div>
 
-      <button id="btn-generate" class="btn-execute">GENERATE SIGNAL</button>
+      <button id="btn-generate" type="button" class="btn-execute">GENERATE SIGNAL</button>
     </div>
 
-    <!-- 4. KOTAK SIGNAL TERPISAH (Sinyal 1 & Sinyal 2) -->
-    <div class="signal-container-card">
+    <!-- 4. KOTAK SIGNAL TUNGGAL (Terpisah di Bawah Control Panel) -->
+    <div class="signal-single-card">
       
-      <!-- Sinyal Utama 1 (Default Placeholder ?) -->
-      <div id="empty-signal-1" class="empty-signal-box">
+      <!-- State 1: Kosong (Tanda Tanya Besar) -->
+      <div id="empty-signal-state" class="empty-signal-state">
         <div class="question-mark">?</div>
-        <div class="empty-text">PRIMARY SIGNAL WAITING</div>
+        <div class="empty-text">NO SIGNAL GENERATED YET</div>
       </div>
 
-      <div id="signal-box-1" class="signal-box" style="display: none;">
+      <!-- State 2: Ada Sinyal -->
+      <div id="active-signal-state" style="display: none;">
         <div class="signal-header">
-          <span id="res-pair-1" class="signal-pair">BTC/USDT</span>
-          <span id="res-type-1" class="signal-type type-buy">BUY</span>
+          <span id="res-pair" class="signal-pair">BTC/USDT</span>
+          <span id="res-type" class="signal-type type-buy">BUY</span>
         </div>
         <div class="signal-grid">
-          <div class="grid-item"><span>ENTRY AREA</span><b id="res-entry-1">-</b></div>
-          <div class="grid-item"><span>TARGET TP</span><b id="res-tp-1" style="color: var(--accent-green);">-</b></div>
-          <div class="grid-item"><span>STOP LOSS</span><b id="res-sl-1" style="color: var(--red-trade);">-</b></div>
-          <div class="grid-item"><span>TIMEFRAME</span><b id="res-tf-1">-</b></div>
-        </div>
-      </div>
-
-      <!-- Sinyal Cadangan 2 (Default Placeholder ?) -->
-      <div id="empty-signal-2" class="empty-signal-box">
-        <div class="question-mark">?</div>
-        <div class="empty-text">SECONDARY SIGNAL EMPTY</div>
-      </div>
-
-      <div id="signal-box-2" class="signal-box" style="display: none;">
-        <div class="signal-header">
-          <span id="res-pair-2" class="signal-pair">BTC/USDT</span>
-          <span id="res-type-2" class="signal-type type-buy">BUY</span>
-        </div>
-        <div class="signal-grid">
-          <div class="grid-item"><span>ENTRY AREA</span><b id="res-entry-2">-</b></div>
-          <div class="grid-item"><span>TARGET TP</span><b id="res-tp-2" style="color: var(--accent-green);">-</b></div>
-          <div class="grid-item"><span>STOP LOSS</span><b id="res-sl-2" style="color: var(--red-trade);">-</b></div>
-          <div class="grid-item"><span>TIMEFRAME</span><b id="res-tf-2">-</b></div>
+          <div class="grid-item"><span>ENTRY AREA</span><b id="res-entry">-</b></div>
+          <div class="grid-item"><span>TARGET TP</span><b id="res-tp" style="color: var(--accent-green);">-</b></div>
+          <div class="grid-item"><span>STOP LOSS</span><b id="res-sl" style="color: var(--red-trade);">-</b></div>
+          <div class="grid-item"><span>TIMEFRAME</span><b id="res-tf">-</b></div>
         </div>
       </div>
 
@@ -536,7 +473,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <span class="modal-title">SELECT ASSET</span>
-        <button id="close-asset-modal" class="btn-close-modal">✕</button>
+        <button id="close-asset-modal" class="btn-close-modal" type="button">✕</button>
       </div>
 
       <div class="asset-list">
@@ -574,50 +511,68 @@
     let selectedPair = "BTC/USDT";
     let selectedTimeframe = "15s";
 
-    // 1. Auth State Check
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "index.html";
-      } else {
-        rawEmail = user.email;
-        updateEmailDisplay();
+    // --- 1. Realtime Server Clock (Langsung Jalan) ---
+    function startClock() {
+      const clockEl = document.getElementById("live-clock");
+      function update() {
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        const s = String(now.getSeconds()).padStart(2, '0');
+        if (clockEl) clockEl.innerText = `${h}:${m}:${s}`;
       }
-    });
+      update();
+      setInterval(update, 1000);
+    }
+    startClock();
 
-    // 2. Hide / Show Email
+    // --- 2. Auth State & Email Toggle ---
     const emailText = document.getElementById("user-email-text");
+    const toggleEmailBtn = document.getElementById("toggle-email");
+
     function updateEmailDisplay() {
+      if (!rawEmail) return;
       if (isEmailHidden) {
         const parts = rawEmail.split("@");
-        emailText.innerText = parts[0].substring(0, 2) + "***@" + parts[1];
+        emailText.innerText = parts[0].substring(0, 2) + "***@" + (parts[1] || "");
       } else {
         emailText.innerText = rawEmail;
       }
     }
-    document.getElementById("toggle-email").addEventListener("click", () => {
-      isEmailHidden = !isEmailHidden;
-      updateEmailDisplay();
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "index.html";
+      } else {
+        rawEmail = user.email || "user@app.com";
+        updateEmailDisplay();
+      }
     });
 
-    // 3. Realtime Server Clock
-    function updateClock() {
-      const now = new Date();
-      const h = String(now.getHours()).padStart(2, '0');
-      const m = String(now.getMinutes()).padStart(2, '0');
-      const s = String(now.getSeconds()).padStart(2, '0');
-      document.getElementById("live-clock").innerText = `${h}:${m}:${s}`;
+    if (toggleEmailBtn) {
+      toggleEmailBtn.addEventListener("click", () => {
+        isEmailHidden = !isEmailHidden;
+        updateEmailDisplay();
+      });
     }
-    setInterval(updateClock, 1000);
-    updateClock();
 
-    // 4. Custom Asset Modal Popup Logic
+    // --- 3. Asset Popup Modal Logic ---
     const assetModal = document.getElementById("asset-modal");
     const openModalBtn = document.getElementById("open-asset-modal");
     const closeModalBtn = document.getElementById("close-asset-modal");
     const currentAssetText = document.getElementById("current-asset-text");
 
-    openModalBtn.addEventListener("click", () => assetModal.style.display = "flex");
-    closeModalBtn.addEventListener("click", () => assetModal.style.display = "none");
+    if (openModalBtn && assetModal) {
+      openModalBtn.addEventListener("click", () => {
+        assetModal.style.display = "flex";
+      });
+    }
+
+    if (closeModalBtn && assetModal) {
+      closeModalBtn.addEventListener("click", () => {
+        assetModal.style.display = "none";
+      });
+    }
 
     document.querySelectorAll(".asset-item").forEach(item => {
       item.addEventListener("click", () => {
@@ -627,7 +582,7 @@
       });
     });
 
-    // 5. Timeframe Selector
+    // --- 4. Timeframe Selector Logic ---
     const tfButtons = document.querySelectorAll(".tf-btn");
     tfButtons.forEach(btn => {
       btn.addEventListener("click", () => {
@@ -637,12 +592,10 @@
       });
     });
 
-    // 6. Generate Signal Logic
+    // --- 5. Generate Signal Logic ---
     const btnGenerate = document.getElementById("btn-generate");
-    const signalBox1 = document.getElementById("signal-box-1");
-    const emptySignal1 = document.getElementById("empty-signal-1");
-    const signalBox2 = document.getElementById("signal-box-2");
-    const emptySignal2 = document.getElementById("empty-signal-2");
+    const emptyState = document.getElementById("empty-signal-state");
+    const activeState = document.getElementById("active-signal-state");
 
     btnGenerate.addEventListener("click", async () => {
       btnGenerate.innerText = "ANALYZING MARKET...";
@@ -653,35 +606,44 @@
           collection(db, "signals"),
           where("pair", "==", selectedPair),
           orderBy("createdAt", "desc"),
-          limit(2)
+          limit(1)
         );
 
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          const docs = querySnapshot.docs;
+          const data = querySnapshot.docs[0].data();
 
-          // Render Signal 1
-          const data1 = docs[0].data();
-          document.getElementById("res-pair-1").innerText = data1.pair;
-          const isBuy1 = data1.type.toUpperCase().includes("BUY");
-          const resType1 = document.getElementById("res-type-1");
-          resType1.innerText = isBuy1 ? "BUY / UP" : "SELL / DOWN";
-          resType1.className = `signal-type ${isBuy1 ? "type-buy" : "type-sell"}`;
+          document.getElementById("res-pair").innerText = data.pair;
+          const isBuy = data.type.toUpperCase().includes("BUY");
+          const resType = document.getElementById("res-type");
+          resType.innerText = isBuy ? "BUY / UP" : "SELL / DOWN";
+          resType.className = `signal-type ${isBuy ? "type-buy" : "type-sell"}`;
 
-          document.getElementById("res-entry-1").innerText = data1.entry;
-          document.getElementById("res-tp-1").innerText = data1.tp;
-          document.getElementById("res-sl-1").innerText = data1.sl;
-          document.getElementById("res-tf-1").innerText = selectedTimeframe.toUpperCase();
+          document.getElementById("res-entry").innerText = data.entry;
+          document.getElementById("res-tp").innerText = data.tp;
+          document.getElementById("res-sl").innerText = data.sl;
+          document.getElementById("res-tf").innerText = selectedTimeframe.toUpperCase();
 
-          emptySignal1.style.display = "none";
-          signalBox1.style.display = "block";
+          emptyState.style.display = "none";
+          activeState.style.display = "block";
+        } else {
+          alert(`Sinyal untuk ${selectedPair} belum tersedia.`);
+          activeState.style.display = "none";
+          emptyState.style.display = "flex";
+        }
+      } catch (err) {
+        alert("Gagal mengambil data sinyal: " + err.message);
+      } finally {
+        btnGenerate.innerText = "GENERATE SIGNAL";
+        btnGenerate.disabled = false;
+      }
+    });
 
-          // Render Signal 2
-          if (docs.length > 1) {
-            const data2 = docs[1].data();
-            document.getElementById("res-pair-2").innerText = data2.pair;
-            const isBuy2 = data2.type.toUpperCase().includes("BUY");
-            const resType2 = document.getElementById("res-type-2");
-            resType2.innerText = isBuy2 ? "BUY / UP" : "SELL / DOWN";
-            resType2.className = `signal
+    // --- 6. Logout ---
+    document.getElementById("btn-logout").addEventListener("click", () => {
+      signOut(auth).then(() => window.location.href = "index.html");
+    });
+  </script>
+</body>
+</html>
