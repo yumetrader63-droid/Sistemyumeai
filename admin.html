@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - VIP Signal</title>
+  <title>VIP Signal Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
@@ -12,324 +12,246 @@
       --accent-green: #00e676; --red-trade: #ff5252; --border-dark: #232933;
       --text-main: #ffffff; --text-muted: #848e9c;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
     body { background-color: var(--bg-canvas); color: var(--text-main); min-height: 100vh; padding: 16px; }
 
-    .admin-layout {
-      max-width: 1300px; margin: 0 auto;
-      display: grid; grid-template-columns: 360px 1fr; gap: 20px;
-    }
-    @media (max-width: 992px) { .admin-layout { grid-template-columns: 1fr; } }
+    .header { max-width: 800px; margin: 0 auto 20px auto; display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 14px 18px; border-radius: 12px; border: 1px solid var(--border-dark); }
+    .user-info { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); }
+    .user-email { color: var(--accent-green); display: block; font-size: 0.85rem; }
+    .btn-logout { background: rgba(255, 82, 82, 0.15); color: var(--red-trade); border: 1px solid var(--red-trade); padding: 8px 14px; border-radius: 6px; font-weight: 800; font-size: 0.75rem; cursor: pointer; }
 
-    .card { background: var(--bg-card); border: 1px solid var(--border-dark); border-radius: 14px; padding: 18px; margin-bottom: 20px; }
-    .card-title { font-size: 0.95rem; font-weight: 800; color: var(--accent-green); margin-bottom: 14px; text-transform: uppercase; }
-    
-    .form-group { margin-bottom: 12px; }
-    label { display: block; font-size: 0.72rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; }
-    input, select {
-      width: 100%; padding: 12px; background: var(--bg-input);
-      border: 1px solid var(--border-dark); border-radius: 8px; color: var(--text-main); font-weight: 700; font-size: 0.85rem;
-    }
-    input:focus, select:focus { outline: none; border-color: var(--accent-green); }
+    .container { max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+    .card { background: var(--bg-card); border: 1px solid var(--border-dark); border-radius: 14px; padding: 18px; }
+    .card-title { font-size: 0.9rem; font-weight: 800; color: var(--text-muted); margin-bottom: 12px; }
 
+    .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    @media (max-width: 480px) { .control-grid { grid-template-columns: 1fr; } }
+
+    select { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-dark); border-radius: 8px; color: var(--text-main); font-weight: 700; font-size: 0.85rem; }
     .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
     .btn-green { background: var(--accent-green); color: #000; }
-    .btn-red { background: rgba(255, 82, 82, 0.15); color: var(--red-trade); border: 1px solid var(--red-trade); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-green:active { transform: scale(0.98); }
 
-    /* Search Box Khusus */
-    .search-box { margin-bottom: 15px; }
-    .search-box input { border: 1px solid var(--accent-green); background: rgba(0, 230, 118, 0.05); }
+    .signal-box { text-align: center; padding: 24px; border-radius: 12px; background: var(--bg-input); border: 1px solid var(--border-dark); margin-top: 14px; }
+    .clock-display { font-size: 1.8rem; font-weight: 800; color: var(--accent-green); letter-spacing: 1px; margin-bottom: 10px; }
+    .signal-status { font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    
+    .direction-badge { display: inline-block; font-size: 2rem; font-weight: 800; padding: 10px 24px; border-radius: 8px; margin-top: 10px; width: 100%; max-width: 250px; }
+    .badge-up { background: rgba(0, 230, 118, 0.15); color: var(--accent-green); border: 1px solid var(--accent-green); }
+    .badge-down { background: rgba(255, 82, 82, 0.15); color: var(--red-trade); border: 1px solid var(--red-trade); }
+    .badge-wait { background: rgba(255, 255, 255, 0.05); color: var(--text-muted); border: 1px solid var(--border-dark); font-size: 1.2rem; }
 
-    .table-responsive { width: 100%; max-height: 400px; overflow-y: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; white-space: nowrap; }
-    th { position: sticky; top: 0; text-align: left; padding: 10px; background: var(--bg-input); color: var(--text-muted); font-size: 0.7rem; font-weight: 800; z-index: 10;}
-    td { padding: 10px; border-bottom: 1px solid var(--border-dark); font-weight: 700; }
-
-    .dir-up { color: var(--accent-green); }
-    .dir-down { color: var(--red-trade); }
-    .schedule-tag { display: inline-block; padding: 4px 8px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-dark); border-radius: 6px; margin: 2px; font-size: 0.75rem; }
+    .table-responsive { width: 100%; overflow-x: auto; margin-top: 10px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th { text-align: left; padding: 10px; background: var(--bg-input); color: var(--text-muted); font-size: 0.7rem; font-weight: 800; }
+    td { padding: 10px; border-bottom: 1px solid var(--border-dark); font-weight: 700; transition: 0.3s; }
   </style>
 </head>
 <body>
 
-  <div class="admin-layout">
-    
-    <!-- KOLOM KIRI: MANAJEMEN USER -->
-    <div>
-      <div class="card">
-        <div class="card-title">TAMBAH USER BARU</div>
-        <form id="form-create-user">
-          <div class="form-group">
-            <label>EMAIL USER</label>
-            <input type="email" id="new-email" placeholder="user@vip.com" required>
-          </div>
-          <div class="form-group">
-            <label>PASSWORD</label>
-            <input type="password" id="new-password" placeholder="Minimal 6 karakter" required>
-          </div>
-          <button type="submit" id="btn-add-user" class="btn btn-green">TAMBAH USER</button>
-        </form>
-      </div>
+  <div class="header">
+    <div class="user-info">LOGGED IN AS:<span class="user-email" id="display-email">Memuat...</span></div>
+    <button class="btn-logout" id="btn-logout">LOGOUT</button>
+  </div>
 
-      <div class="card">
-        <div class="card-title">DATABASE USER (10K+ READY)</div>
-        
-        <!-- FITUR PENCARIAN USER -->
-        <div class="search-box">
-          <input type="text" id="search-user" placeholder="🔍 Cari email user spesifik...">
+  <div class="container">
+    <div class="card">
+      <div class="card-title">PILIH PAIR & TIMEFRAME</div>
+      <div class="control-grid">
+        <div>
+          <select id="user-pair">
+            <option value="BTC/USDT">BTC/USDT</option>
+            <option value="ETH/USDT">ETH/USDT</option>
+            <option value="SOL/USDT">SOL/USDT</option>
+            <option value="EUR/USD">EUR/USD</option>
+            <option value="GBP/USD">GBP/USD</option>
+          </select>
         </div>
+        <div>
+          <select id="user-tf">
+            <option value="15s">Timeframe 15 Detik</option>
+            <option value="1m" selected>Timeframe 1 Menit</option>
+            <option value="5m">Timeframe 5 Menit</option>
+          </select>
+        </div>
+      </div>
+      <button id="btn-fetch-signals" class="btn btn-green">GENERATE SIGNAL</button>
 
-        <p style="font-size: 0.7rem; color: var(--text-muted); margin-bottom:10px;">*Menampilkan max 50 data untuk mencegah lag.</p>
-
-        <div class="table-responsive">
-          <table>
-            <thead><tr><th>EMAIL</th><th style="text-align: right;">AKSI</th></tr></thead>
-            <tbody id="user-list-tbody">
-              <tr><td colspan="2" style="color: var(--text-muted);">Memuat user...</td></tr>
-            </tbody>
-          </table>
+      <div class="signal-box">
+        <div class="clock-display" id="live-clock">00:00:00</div>
+        <div class="signal-status" id="signal-status-text">KLIK GENERATE UNTUK MEMULAI</div>
+        <div id="signal-badge-container">
+          <div class="direction-badge badge-wait">STANDBY</div>
         </div>
       </div>
     </div>
 
-    <!-- KOLOM KANAN: GENERATOR SINYAL -->
-    <div>
-      <div class="card">
-        <div class="card-title">GENERATE SINYAL ACAK (ALL TIMEFRAMES)</div>
-        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px;">
-          Pilih Pair, lalu klik generate. Sistem otomatis membuat ratusan jadwal secara <b>acak murni</b> untuk timeframe <b>15s, 1m, dan 5m sekaligus</b>.
-        </p>
-
-        <form id="form-generate-signals">
-          <div class="form-group">
-            <label>PILIH PAIR ASSET</label>
-            <select id="signal-pair">
-              <option value="BTC/USDT">BTC/USDT</option>
-              <option value="ETH/USDT">ETH/USDT</option>
-              <option value="SOL/USDT">SOL/USDT</option>
-              <option value="EUR/USD">EUR/USD</option>
-              <option value="GBP/USD">GBP/USD</option>
-            </select>
-          </div>
-          <button type="submit" id="btn-publish" class="btn btn-green">GENERATE ALL TIMEFRAME (15s, 1m, 5m)</button>
-        </form>
-      </div>
-
-      <div class="card">
-        <div class="card-title">DAFTAR SINYAL MASTER DI DATABASE</div>
-        <div class="table-responsive">
-          <table>
-            <thead>
-              <tr>
-                <th>PAIR</th>
-                <th>TF</th>
-                <th>TOTAL</th>
-                <th>SAMPLE ACAK AWAL</th>
-              </tr>
-            </thead>
-            <tbody id="signal-master-tbody">
-              <tr><td colspan="4" style="color: var(--text-muted);">Memuat sinyal...</td></tr>
-            </tbody>
-          </table>
-        </div>
+    <div class="card">
+      <div class="card-title">JADWAL TERDEKAT</div>
+      <div class="table-responsive">
+        <table>
+          <thead><tr><th>WAKTU</th><th>ARAH TRADE</th><th>STATUS</th></tr></thead>
+          <tbody id="schedule-tbody">
+            <tr><td colspan="3" style="color:var(--text-muted); text-align:center;">Data kosong. Silakan klik Generate.</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
-
   </div>
 
   <script type="module">
     import { auth, db } from "./firebase-config.js";
-    import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { collection, doc, setDoc, deleteDoc, onSnapshot, query, where, getDocs, serverTimestamp, limit, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // ==========================================
-    // 1. MANAJEMEN USER (DIOPTIMALISASI UNTUK 10.000+ DATA)
-    // ==========================================
-    const userTbody = document.getElementById("user-list-tbody");
-    const searchInput = document.getElementById("search-user");
-    let unsubscribeUsers = null;
+    const displayEmail = document.getElementById("display-email");
+    const btnLogout = document.getElementById("btn-logout");
+    const selectPair = document.getElementById("user-pair");
+    const selectTf = document.getElementById("user-tf");
+    const btnFetchSignals = document.getElementById("btn-fetch-signals");
+    
+    const liveClock = document.getElementById("live-clock");
+    const signalStatusText = document.getElementById("signal-status-text");
+    const badgeContainer = document.getElementById("signal-badge-container");
+    const scheduleTbody = document.getElementById("schedule-tbody");
 
-    // Fungsi Render DOM Anti-Lag (menggunakan string builder, bukan innerHTML berulang)
-    function renderUsersToTable(snapshot) {
-      if (snapshot.empty) {
-        userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--text-muted);">Tidak ada user ditemukan.</td></tr>`;
-        return;
-      }
-      
-      let htmlContent = ""; // Tampung HTML di memori (Super Cepat)
-      snapshot.forEach(docSnap => {
-        const u = docSnap.data();
-        htmlContent += `
-          <tr>
-            <td>${u.email}</td>
-            <td style="text-align: right;">
-              <button class="btn btn-red" style="padding:4px 8px; font-size:0.7rem; width:auto;" onclick="deleteUser('${docSnap.id}')">Hapus</button>
-            </td>
-          </tr>
-        `;
-      });
-      userTbody.innerHTML = htmlContent; // Render ke layar HANYA 1 KALI
-    }
+    let activeSchedule = [];
 
-    // Default Query (Max 50 User)
-    function loadDefaultUsers() {
-      if (unsubscribeUsers) unsubscribeUsers(); // Hentikan listener lama
-      const qDefault = query(collection(db, "users"), limit(50));
-      unsubscribeUsers = onSnapshot(qDefault, renderUsersToTable);
-    }
-
-    // Pencarian User Secara Realtime
-    searchInput.addEventListener("keyup", (e) => {
-      const keyword = e.target.value.trim().toLowerCase();
-      
-      if (unsubscribeUsers) unsubscribeUsers(); 
-
-      if (keyword === "") {
-        loadDefaultUsers();
-      } else {
-        // Query mencari awalan email
-        const qSearch = query(
-          collection(db, "users"),
-          where("email", ">=", keyword),
-          where("email", "<=", keyword + "\uf8ff"),
-          limit(50)
-        );
-        unsubscribeUsers = onSnapshot(qSearch, renderUsersToTable);
-      }
+    // Autentikasi User
+    onAuthStateChanged(auth, (user) => {
+      if (user) displayEmail.innerText = user.email;
+      else window.location.href = "login.html";
     });
+    btnLogout.addEventListener("click", () => signOut(auth).then(() => window.location.href = "login.html"));
 
-    // Panggil default saat halaman dimuat
-    loadDefaultUsers();
-
-    // Fungsi Hapus User (Window Global)
-    window.deleteUser = async (uid) => {
-      if (confirm("Hapus user ini dari database?")) {
-        await deleteDoc(doc(db, "users", uid));
-      }
-    };
-
-    // Tambah User
-    document.getElementById("form-create-user").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById("btn-add-user");
-      btn.disabled = true;
-      btn.innerText = "MEMPROSES...";
-
-      const email = document.getElementById("new-email").value.trim().toLowerCase();
-      const pwd = document.getElementById("new-password").value.trim();
+    // Tarik Data dan Ubah Menjadi Timestamp Aktual
+    btnFetchSignals.addEventListener("click", async () => {
+      btnFetchSignals.innerText = "MEMUAT DATA...";
+      const pair = selectPair.value;
+      const tf = selectTf.value;
 
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, pwd);
-        const user = userCredential.user;
-        await setDoc(doc(db, "users", user.uid), {
-          uid: user.uid,
-          email: email,
-          createdAt: serverTimestamp()
-        });
-        alert("Berhasil! User tersimpan.");
-        document.getElementById("form-create-user").reset();
-      } catch (err) {
-        alert("Gagal: " + err.message);
+        const q = query(collection(db, "admin_master_signals"), where("pair", "==", pair), where("timeframe", "==", tf));
+        const snapshot = await getDocs(q);
+        activeSchedule = [];
+        
+        if (snapshot.empty) {
+          scheduleTbody.innerHTML = `<tr><td colspan="3" style="color:var(--red-trade); text-align:center;">Tidak ada jadwal diterbitkan.</td></tr>`;
+          signalStatusText.innerText = "TIDAK ADA JADWAL";
+          badgeContainer.innerHTML = `<div class="direction-badge badge-wait">KOSONG</div>`;
+        } else {
+          snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            if (data.schedule) {
+              // 1. Tentukan tanggal referensi (Hari Ini)
+              let refDate = new Date();
+              if (data.updatedAt && typeof data.updatedAt.toDate === 'function') {
+                refDate = data.updatedAt.toDate();
+              }
+
+              // 2. Ubah format "09:50" ke Timestamp Angka (Milliseconds)
+              activeSchedule = data.schedule.map(item => {
+                let parts = item.time.split(':');
+                let d = new Date(refDate);
+                d.setHours(parseInt(parts[0]), parseInt(parts[1]), parts.length > 2 ? parseInt(parts[2]) : 0, 0);
+                return { ...item, ts: d.getTime() };
+              });
+
+              // 3. Deteksi pergantian hari (Midnight Fix) agar timestamp urut
+              for (let i = 1; i < activeSchedule.length; i++) {
+                while (activeSchedule[i].ts < activeSchedule[i - 1].ts) {
+                  activeSchedule[i].ts += 86400000; // Tambah 24 Jam
+                }
+              }
+            }
+          });
+          signalStatusText.innerText = "MENUNGGU WAKTU EKSEKUSI...";
+        }
+      } catch (error) {
+        alert("Gagal memuat sinyal: " + error.message);
       } finally {
-        btn.disabled = false;
-        btn.innerText = "TAMBAH USER";
+        setTimeout(() => { btnFetchSignals.innerText = "GENERATE SIGNAL"; }, 500);
       }
     });
 
-    // ==========================================
-    // 2. FITUR GENERATE SINYAL ACAK (KANAN)
-    // ==========================================
-    function generateRandomSchedule(tf) {
-      const schedule = [];
+    // ENGINE UTAMA (Jalan setiap detik untuk menghapus data expired)
+    setInterval(() => {
       const now = new Date();
-      let stepMs = tf === "15s" ? 15000 : (tf === "1m" ? 60000 : 300000);
-      let totalItems = 200; 
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      liveClock.innerText = `${h}:${m}:${s}`;
 
-      for (let i = 1; i <= totalItems; i++) {
-        const itemTime = new Date(now.getTime() + (i * stepMs));
-        let h = String(itemTime.getHours()).padStart(2, '0');
-        let m = String(itemTime.getMinutes()).padStart(2, '0');
-        let s = String(itemTime.getSeconds()).padStart(2, '0');
-        let timeStr = tf === "15s" ? `${h}:${m}:${s}` : `${h}:${m}`;
-        const randomDir = Math.random() > 0.5 ? "UP" : "DOWN";
-        schedule.push({ time: timeStr, direction: randomDir });
-      }
-      return schedule;
-    }
+      if (activeSchedule.length > 0) {
+        const nowTs = now.getTime(); // Waktu saat ini (dalam milidetik)
+        const tf = selectTf.value;
+        
+        // Tentukan durasi sinyal sebelum dianggap kedaluwarsa
+        const durationMs = tf === "15s" ? 15000 : (tf === "1m" ? 60000 : 300000);
 
-    document.getElementById("form-generate-signals").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById("btn-publish");
-      btn.disabled = true;
-      btn.innerText = "GENERATING...";
+        // FITUR PENGHAPUSAN OTOMATIS: 
+        // Hanya simpan sinyal yang masa kedaluwarsanya belum lewat
+        const validSignals = activeSchedule.filter(item => nowTs < (item.ts + durationMs));
 
-      const pair = document.getElementById("signal-pair").value;
-      const allTimeframes = ["15s", "1m", "5m"];
-      
-      try {
-        const q = query(collection(db, "admin_master_signals"), where("pair", "==", pair));
-        const oldDocs = await getDocs(q);
-        const deletePromises = [];
-        oldDocs.forEach(d => deletePromises.push(deleteDoc(doc(db, "admin_master_signals", d.id))));
-        await Promise.all(deletePromises);
-
-        const savePromises = allTimeframes.map(tf => {
-          const docId = `${pair.replace('/','-')}_${tf}`; 
-          return setDoc(doc(db, "admin_master_signals", docId), {
-            pair: pair, timeframe: tf,
-            schedule: generateRandomSchedule(tf),
-            updatedAt: serverTimestamp()
-          });
-        });
-
-        await Promise.all(savePromises);
-        alert(`SUKSES! Ratusan sinyal acak untuk pair ${pair} berhasil diterbitkan.`);
-      } catch (err) {
-        alert("Gagal mempublikasikan: " + err.message);
-      } finally {
-        btn.disabled = false;
-        btn.innerText = "GENERATE ALL TIMEFRAME (15s, 1m, 5m)";
-      }
-    });
-
-    // ==========================================
-    // 3. TABEL REALTIME SINYAL MASTER
-    // ==========================================
-    onSnapshot(collection(db, "admin_master_signals"), (snapshot) => {
-      const tbody = document.getElementById("signal-master-tbody");
-      
-      let htmlContent = ""; // Optimasi DOM Render
-      
-      if (snapshot.empty) {
-        tbody.innerHTML = `<tr><td colspan="4" style="color:var(--text-muted);">Belum ada sinyal.</td></tr>`;
-        return;
-      }
-      
-      snapshot.forEach(docSnap => {
-        const d = docSnap.data();
-        let sampleHtml = "";
-
-        if (d.schedule && Array.isArray(d.schedule)) {
-          const samples = d.schedule.slice(0, 3);
-          samples.forEach(item => {
-            const dirIcon = item.direction === "UP" ? `<b class="dir-up">▲ BUY</b>` : `<b class="dir-down">▼ SELL</b>`;
-            sampleHtml += `<span class="schedule-tag"><b>${item.time}</b>: ${dirIcon}</span> `;
-          });
+        if (validSignals.length > 0) {
+          const currentSignal = validSignals[0]; // Jadwal paling atas
+          
+          // Cek apakah detik/menit saat ini sudah masuk ke waktu eksekusi
+          if (nowTs >= currentSignal.ts) {
+            signalStatusText.innerText = `EKSEKUSI SEKARANG (${currentSignal.time})`;
+            if (currentSignal.direction === "UP") {
+              badgeContainer.innerHTML = `<div class="direction-badge badge-up">▲ BUY</div>`;
+            } else {
+              badgeContainer.innerHTML = `<div class="direction-badge badge-down">▼ SELL</div>`;
+            }
+          } else {
+            // Belum masuk waktunya, masih standby menunggu
+            signalStatusText.innerText = "MENUNGGU WAKTU EKSEKUSI...";
+            badgeContainer.innerHTML = `<div class="direction-badge badge-wait">STANDBY</div>`;
+          }
+        } else {
+          // Semua jadwal di tabel sudah kedaluwarsa habis
+          signalStatusText.innerText = "SEMUA JADWAL TELAH SELESAI";
+          badgeContainer.innerHTML = `<div class="direction-badge badge-wait">SELESAI</div>`;
         }
 
+        // Render ulang tabel (Otomatis menghapus yang masa aktifnya habis)
+        renderScheduleTable(validSignals, nowTs, durationMs);
+      }
+    }, 1000);
+
+    // Fungsi Render Tabel Jadwal
+    function renderScheduleTable(scheduleArray, nowTs, durationMs) {
+      if (!scheduleArray || scheduleArray.length === 0) {
+        scheduleTbody.innerHTML = `<tr><td colspan="3" style="color:var(--text-muted); text-align:center;">Jadwal Habis</td></tr>`;
+        return;
+      }
+      
+      let htmlContent = "";
+      const displayItems = scheduleArray.slice(0, 10); // Tampilkan 10 terdekat
+      
+      displayItems.forEach(item => {
+        const isUp = item.direction === "UP";
+        const dirHtml = isUp ? `<span style="color:var(--accent-green)">▲ BUY</span>` : `<span style="color:var(--red-trade)">▼ SELL</span>`;
+        
+        // Tandai tabel warna hijau jika sedang aktif
+        const isActive = nowTs >= item.ts && nowTs < (item.ts + durationMs);
+        const rowStyle = isActive ? `background: rgba(0, 230, 118, 0.05);` : ``;
+        const statusTag = isActive 
+          ? `<span style="color:var(--accent-green); font-size:0.75rem; font-weight:800;">ACTIVE</span>` 
+          : `<span style="color:var(--text-muted); font-size:0.75rem;">WAIT</span>`;
+
         htmlContent += `
-          <tr>
-            <td><b>${d.pair}</b></td>
-            <td><span class="schedule-tag" style="color:var(--accent-green);">${d.timeframe}</span></td>
-            <td>${d.schedule ? d.schedule.length : 0} Sinyal</td>
-            <td>${sampleHtml} ...</td>
+          <tr style="${rowStyle}">
+            <td><b>${item.time}</b></td>
+            <td>${dirHtml}</td>
+            <td>${statusTag}</td>
           </tr>
         `;
       });
-      tbody.innerHTML = htmlContent;
-    });
+      
+      scheduleTbody.innerHTML = htmlContent;
+    }
   </script>
 </body>
 </html>
