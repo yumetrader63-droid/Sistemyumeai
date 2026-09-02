@@ -8,14 +8,9 @@
   
   <style>
     :root {
-      --bg-canvas: #090c0f;
-      --bg-card: #14181f;
-      --bg-input: #1d232c;
-      --accent-green: #00e676;
-      --red-trade: #ff5252;
-      --border-dark: #232933;
-      --text-main: #ffffff;
-      --text-muted: #848e9c;
+      --bg-canvas: #090c0f; --bg-card: #14181f; --bg-input: #1d232c;
+      --accent-green: #00e676; --red-trade: #ff5252; --border-dark: #232933;
+      --text-main: #ffffff; --text-muted: #848e9c;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -23,14 +18,14 @@
 
     .admin-layout {
       max-width: 1300px; margin: 0 auto;
-      display: grid; grid-template-columns: 340px 1fr; gap: 20px;
+      display: grid; grid-template-columns: 360px 1fr; gap: 20px;
     }
     @media (max-width: 992px) { .admin-layout { grid-template-columns: 1fr; } }
 
     .card { background: var(--bg-card); border: 1px solid var(--border-dark); border-radius: 14px; padding: 18px; margin-bottom: 20px; }
     .card-title { font-size: 0.95rem; font-weight: 800; color: var(--accent-green); margin-bottom: 14px; text-transform: uppercase; }
+    
     .form-group { margin-bottom: 12px; }
-
     label { display: block; font-size: 0.72rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; }
     input, select {
       width: 100%; padding: 12px; background: var(--bg-input);
@@ -40,13 +35,16 @@
 
     .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
     .btn-green { background: var(--accent-green); color: #000; }
-    .btn-green:active { transform: scale(0.98); }
     .btn-red { background: rgba(255, 82, 82, 0.15); color: var(--red-trade); border: 1px solid var(--red-trade); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .table-responsive { width: 100%; overflow-x: auto; }
+    /* Search Box Khusus */
+    .search-box { margin-bottom: 15px; }
+    .search-box input { border: 1px solid var(--accent-green); background: rgba(0, 230, 118, 0.05); }
+
+    .table-responsive { width: 100%; max-height: 400px; overflow-y: auto; }
     table { width: 100%; border-collapse: collapse; font-size: 0.82rem; white-space: nowrap; }
-    th { text-align: left; padding: 10px; background: var(--bg-input); color: var(--text-muted); font-size: 0.7rem; font-weight: 800; border-bottom: 1px solid var(--border-dark); }
+    th { position: sticky; top: 0; text-align: left; padding: 10px; background: var(--bg-input); color: var(--text-muted); font-size: 0.7rem; font-weight: 800; z-index: 10;}
     td { padding: 10px; border-bottom: 1px solid var(--border-dark); font-weight: 700; }
 
     .dir-up { color: var(--accent-green); }
@@ -61,7 +59,7 @@
     <!-- KOLOM KIRI: MANAJEMEN USER -->
     <div>
       <div class="card">
-        <div class="card-title">TAMBAH USER BARU (AUTH & FIRESTORE)</div>
+        <div class="card-title">TAMBAH USER BARU</div>
         <form id="form-create-user">
           <div class="form-group">
             <label>EMAIL USER</label>
@@ -76,7 +74,15 @@
       </div>
 
       <div class="card">
-        <div class="card-title">DAFTAR USER DATABASE</div>
+        <div class="card-title">DATABASE USER (10K+ READY)</div>
+        
+        <!-- FITUR PENCARIAN USER -->
+        <div class="search-box">
+          <input type="text" id="search-user" placeholder="🔍 Cari email user spesifik...">
+        </div>
+
+        <p style="font-size: 0.7rem; color: var(--text-muted); margin-bottom:10px;">*Menampilkan max 50 data untuk mencegah lag.</p>
+
         <div class="table-responsive">
           <table>
             <thead><tr><th>EMAIL</th><th style="text-align: right;">AKSI</th></tr></thead>
@@ -119,7 +125,7 @@
               <tr>
                 <th>PAIR</th>
                 <th>TF</th>
-                <th>TOTAL JADWAL</th>
+                <th>TOTAL</th>
                 <th>SAMPLE ACAK AWAL</th>
               </tr>
             </thead>
@@ -136,25 +142,26 @@
   <script type="module">
     import { auth, db } from "./firebase-config.js";
     import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { collection, doc, setDoc, deleteDoc, onSnapshot, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { collection, doc, setDoc, deleteDoc, onSnapshot, query, where, getDocs, serverTimestamp, limit, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     // ==========================================
-    // 1. FITUR MANAJEMEN USER (KIRI)
+    // 1. MANAJEMEN USER (DIOPTIMALISASI UNTUK 10.000+ DATA)
     // ==========================================
     const userTbody = document.getElementById("user-list-tbody");
-    const formUser = document.getElementById("form-create-user");
-    const btnAddUser = document.getElementById("btn-add-user");
+    const searchInput = document.getElementById("search-user");
+    let unsubscribeUsers = null;
 
-    // Realtime Listen Data User
-    onSnapshot(collection(db, "users"), (snapshot) => {
-      userTbody.innerHTML = "";
+    // Fungsi Render DOM Anti-Lag (menggunakan string builder, bukan innerHTML berulang)
+    function renderUsersToTable(snapshot) {
       if (snapshot.empty) {
-        userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--text-muted);">Belum ada user.</td></tr>`;
+        userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--text-muted);">Tidak ada user ditemukan.</td></tr>`;
         return;
       }
+      
+      let htmlContent = ""; // Tampung HTML di memori (Super Cepat)
       snapshot.forEach(docSnap => {
         const u = docSnap.data();
-        userTbody.innerHTML += `
+        htmlContent += `
           <tr>
             <td>${u.email}</td>
             <td style="text-align: right;">
@@ -163,22 +170,54 @@
           </tr>
         `;
       });
+      userTbody.innerHTML = htmlContent; // Render ke layar HANYA 1 KALI
+    }
+
+    // Default Query (Max 50 User)
+    function loadDefaultUsers() {
+      if (unsubscribeUsers) unsubscribeUsers(); // Hentikan listener lama
+      const qDefault = query(collection(db, "users"), limit(50));
+      unsubscribeUsers = onSnapshot(qDefault, renderUsersToTable);
+    }
+
+    // Pencarian User Secara Realtime
+    searchInput.addEventListener("keyup", (e) => {
+      const keyword = e.target.value.trim().toLowerCase();
+      
+      if (unsubscribeUsers) unsubscribeUsers(); 
+
+      if (keyword === "") {
+        loadDefaultUsers();
+      } else {
+        // Query mencari awalan email
+        const qSearch = query(
+          collection(db, "users"),
+          where("email", ">=", keyword),
+          where("email", "<=", keyword + "\uf8ff"),
+          limit(50)
+        );
+        unsubscribeUsers = onSnapshot(qSearch, renderUsersToTable);
+      }
     });
 
-    // Fungsi Hapus User Global
+    // Panggil default saat halaman dimuat
+    loadDefaultUsers();
+
+    // Fungsi Hapus User (Window Global)
     window.deleteUser = async (uid) => {
       if (confirm("Hapus user ini dari database?")) {
         await deleteDoc(doc(db, "users", uid));
       }
     };
 
-    // Proses Tambah User
-    formUser.addEventListener("submit", async (e) => {
+    // Tambah User
+    document.getElementById("form-create-user").addEventListener("submit", async (e) => {
       e.preventDefault();
-      btnAddUser.disabled = true;
-      btnAddUser.innerText = "MEMPROSES...";
+      const btn = document.getElementById("btn-add-user");
+      btn.disabled = true;
+      btn.innerText = "MEMPROSES...";
 
-      const email = document.getElementById("new-email").value.trim();
+      const email = document.getElementById("new-email").value.trim().toLowerCase();
       const pwd = document.getElementById("new-password").value.trim();
 
       try {
@@ -190,86 +229,68 @@
           createdAt: serverTimestamp()
         });
         alert("Berhasil! User tersimpan.");
-        formUser.reset();
+        document.getElementById("form-create-user").reset();
       } catch (err) {
         alert("Gagal: " + err.message);
       } finally {
-        btnAddUser.disabled = false;
-        btnAddUser.innerText = "TAMBAH USER";
+        btn.disabled = false;
+        btn.innerText = "TAMBAH USER";
       }
     });
 
     // ==========================================
     // 2. FITUR GENERATE SINYAL ACAK (KANAN)
     // ==========================================
-    
-    // Fungsi Generate Jadwal Acak
     function generateRandomSchedule(tf) {
       const schedule = [];
       const now = new Date();
-      
-      let stepMs = 0;
-      let totalItems = 200; // Buat 200 sinyal ke depan
-
-      if (tf === "15s") stepMs = 15 * 1000;
-      if (tf === "1m") stepMs = 60 * 1000;
-      if (tf === "5m") stepMs = 5 * 60 * 1000;
+      let stepMs = tf === "15s" ? 15000 : (tf === "1m" ? 60000 : 300000);
+      let totalItems = 200; 
 
       for (let i = 1; i <= totalItems; i++) {
         const itemTime = new Date(now.getTime() + (i * stepMs));
         let h = String(itemTime.getHours()).padStart(2, '0');
         let m = String(itemTime.getMinutes()).padStart(2, '0');
         let s = String(itemTime.getSeconds()).padStart(2, '0');
-        
         let timeStr = tf === "15s" ? `${h}:${m}:${s}` : `${h}:${m}`;
-
-        // LOGIKA ACAK MURNI 50:50
         const randomDir = Math.random() > 0.5 ? "UP" : "DOWN";
-
         schedule.push({ time: timeStr, direction: randomDir });
       }
       return schedule;
     }
 
-    const formSignal = document.getElementById("form-generate-signals");
-    const btnPublish = document.getElementById("btn-publish");
-
-    formSignal.addEventListener("submit", async (e) => {
+    document.getElementById("form-generate-signals").addEventListener("submit", async (e) => {
       e.preventDefault();
-      btnPublish.disabled = true;
-      btnPublish.innerText = "GENERATING ALL TIMEFRAME...";
+      const btn = document.getElementById("btn-publish");
+      btn.disabled = true;
+      btn.innerText = "GENERATING...";
 
       const pair = document.getElementById("signal-pair").value;
       const allTimeframes = ["15s", "1m", "5m"];
       
       try {
-        // Step 1: Hapus data sinyal lama khusus pair ini
         const q = query(collection(db, "admin_master_signals"), where("pair", "==", pair));
         const oldDocs = await getDocs(q);
         const deletePromises = [];
         oldDocs.forEach(d => deletePromises.push(deleteDoc(doc(db, "admin_master_signals", d.id))));
         await Promise.all(deletePromises);
 
-        // Step 2: Generate dan Simpan sinyal baru untuk 15s, 1m, 5m
         const savePromises = allTimeframes.map(tf => {
-          const schedule = generateRandomSchedule(tf);
-          const docId = `${pair.replace('/','-')}_${tf}`; // Contoh ID: BTC-USDT_1m
-          
+          const docId = `${pair.replace('/','-')}_${tf}`; 
           return setDoc(doc(db, "admin_master_signals", docId), {
-            pair: pair,
-            timeframe: tf,
-            schedule: schedule,
+            pair: pair, timeframe: tf,
+            schedule: generateRandomSchedule(tf),
             updatedAt: serverTimestamp()
           });
         });
 
         await Promise.all(savePromises);
-        alert(`SUKSES! Ratusan sinyal acak (15s, 1m, 5m) untuk pair ${pair} berhasil diterbitkan.`);
+        alert(`SUKSES! Ratusan sinyal acak untuk pair ${pair} berhasil diterbitkan.`);
       } catch (err) {
         alert("Gagal mempublikasikan: " + err.message);
       } finally {
-        btnPublish.disabled = false;
-        btnPublish.innerText = "GENERATE ALL TIMEFRAME (15s, 1m, 5m)";
+        btn.disabled = false;
+        btn.innerText = "GENERATE ALL TIMEFRAME (15s, 1m, 5m)";
       }
     });
 
@@ -278,16 +299,18 @@
     // ==========================================
     onSnapshot(collection(db, "admin_master_signals"), (snapshot) => {
       const tbody = document.getElementById("signal-master-tbody");
-      tbody.innerHTML = "";
+      
+      let htmlContent = ""; // Optimasi DOM Render
+      
       if (snapshot.empty) {
         tbody.innerHTML = `<tr><td colspan="4" style="color:var(--text-muted);">Belum ada sinyal.</td></tr>`;
         return;
       }
+      
       snapshot.forEach(docSnap => {
         const d = docSnap.data();
         let sampleHtml = "";
 
-        // Menampilkan 3 sampel jadwal sinyal di tabel agar Admin bisa mengintip
         if (d.schedule && Array.isArray(d.schedule)) {
           const samples = d.schedule.slice(0, 3);
           samples.forEach(item => {
@@ -296,15 +319,16 @@
           });
         }
 
-        tbody.innerHTML += `
+        htmlContent += `
           <tr>
             <td><b>${d.pair}</b></td>
             <td><span class="schedule-tag" style="color:var(--accent-green);">${d.timeframe}</span></td>
-            <td>${d.schedule ? d.schedule.length : 0} Jadwal Acak</td>
+            <td>${d.schedule ? d.schedule.length : 0} Sinyal</td>
             <td>${sampleHtml} ...</td>
           </tr>
         `;
       });
+      tbody.innerHTML = htmlContent;
     });
   </script>
 </body>
