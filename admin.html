@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Admin Panel - Yume Algorit VIP</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
@@ -24,59 +24,44 @@
       margin: 0;
       padding: 0;
       font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       background-color: var(--bg-canvas);
       color: var(--text-main);
       min-height: 100vh;
-      padding: 24px;
+      padding: 16px;
     }
 
-    /* Peringatan Layar HP */
-    .mobile-blocker {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: var(--bg-canvas);
-      z-index: 99999;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 24px;
-    }
-
-    .mobile-blocker h2 {
-      color: var(--red-trade);
-      margin-bottom: 8px;
-    }
-
-    @media (max-width: 900px) {
-      .mobile-blocker { display: flex; }
-      .admin-layout { display: none !important; }
-    }
-
-    /* Layout Desktop Grid */
+    /* Layout Responsive Grid */
     .admin-layout {
       max-width: 1400px;
       margin: 0 auto;
       display: grid;
-      grid-template-columns: 360px 1fr;
-      gap: 24px;
+      grid-template-columns: 340px 1fr;
+      gap: 20px;
+    }
+
+    /* Penyesuaian Tablet & HP */
+    @media (max-width: 992px) {
+      .admin-layout {
+        grid-template-columns: 1fr;
+      }
     }
 
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border-dark);
       border-radius: 14px;
-      padding: 20px;
+      padding: 18px;
     }
 
     .card-title {
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 800;
       color: var(--accent-green);
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -84,7 +69,7 @@
 
     /* Form Styles */
     .form-group {
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     label {
@@ -104,7 +89,7 @@
       border-radius: 8px;
       color: var(--text-main);
       font-weight: 700;
-      font-size: 0.88rem;
+      font-size: 0.85rem;
     }
 
     input:focus, select:focus {
@@ -127,43 +112,17 @@
     .btn-red { background: rgba(255, 82, 82, 0.15); color: var(--red-trade); border: 1px solid var(--red-trade); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    /* Tables */
-    .table-responsive {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-    }
-
-    th {
-      text-align: left;
-      padding: 12px;
-      background: var(--bg-input);
-      color: var(--text-muted);
-      font-size: 0.7rem;
-      font-weight: 800;
-      border-bottom: 1px solid var(--border-dark);
-    }
-
-    td {
-      padding: 12px;
-      border-bottom: 1px solid var(--border-dark);
-      font-weight: 700;
-    }
-
-    /* Signal Indicators */
-    .dir-up { color: var(--accent-green); font-size: 1.1rem; }
-    .dir-down { color: var(--red-trade); font-size: 1.1rem; }
-
-    /* Grid Sub-Cards */
+    /* Grid Sub-Cards Timeframe */
     .grid-3 {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
+    }
+
+    @media (max-width: 768px) {
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
     }
 
     .tf-box {
@@ -172,25 +131,50 @@
       border-radius: 8px;
       padding: 12px;
     }
+
+    /* Tables Responsive Handling */
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+      white-space: nowrap;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px;
+      background: var(--bg-input);
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-weight: 800;
+      border-bottom: 1px solid var(--border-dark);
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border-dark);
+      font-weight: 700;
+    }
+
+    /* Signal Indicators */
+    .dir-up { color: var(--accent-green); font-size: 0.95rem; }
+    .dir-down { color: var(--red-trade); font-size: 0.95rem; }
   </style>
 </head>
 <body>
 
-  <!-- Block Khusus HP -->
-  <div class="mobile-blocker">
-    <div>
-      <h2>AKSES DITOLAK</h2>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">Dashboard Admin hanya dapat diakses melalui Laptop, Tablet, atau Desktop layar lebar.</p>
-    </div>
-  </div>
-
-  <!-- Layout Desktop -->
+  <!-- Responsive Layout Container -->
   <div class="admin-layout">
     
     <!-- KOLOM KIRI: MANAJEMEN USER -->
-    <div style="display: flex; flex-direction: column; gap: 24px;">
+    <div style="display: flex; flex-direction: column; gap: 20px;">
       
-      <!-- Card Tambah User -->
+      <!-- Card Buat User -->
       <div class="card">
         <div class="card-title">BUAT USER BARU</div>
         <form id="form-create-user">
@@ -214,7 +198,7 @@
             <thead>
               <tr>
                 <th>EMAIL</th>
-                <th>AKSI</th>
+                <th style="text-align: right;">AKSI</th>
               </tr>
             </thead>
             <tbody id="user-list-tbody">
@@ -226,14 +210,14 @@
 
     </div>
 
-    <!-- KOLOM KANAN: GENERATE SINYAL PAIR -->
-    <div style="display: flex; flex-direction: column; gap: 24px;">
+    <!-- KOLOM KANAN: GENERATE SINYAL MULTI-TIMEFRAME -->
+    <div style="display: flex; flex-direction: column; gap: 20px;">
       
-      <!-- Card Generator Sinyal Multi-TF -->
+      <!-- Card Generator Sinyal -->
       <div class="card">
         <div class="card-title">GENERATE ALL TIMEFRAME SIGNALS</div>
-        <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 16px;">
-          Memilih Pair akan membuat 3 sinyal sekaligus (15s, 1m, 5m). Sinyal lama pada pair ini akan otomatis ditimpa.
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px;">
+          Memilih Pair akan langsung membuat 3 sinyal (15s, 1m, 5m). Sinyal lama pada pair ini otomatis terhapus.
         </p>
 
         <form id="form-generate-signals">
@@ -248,10 +232,11 @@
             </select>
           </div>
 
-          <!-- Input Manual atau Auto Generator Parameter Sinyal -->
+          <!-- Input Multi-Timeframe Responsive Grid -->
           <div class="grid-3" style="margin-bottom: 14px;">
+            
             <div class="tf-box">
-              <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800;">TIMEFRAME 15s (2 JAM)</span>
+              <span style="font-size: 0.7rem; color: var(--accent-green); font-weight: 800;">15s (BERLAKU 2 JAM)</span>
               <div class="form-group" style="margin-top: 8px;">
                 <label>ARAH</label>
                 <select id="dir-15s"><option value="UP">▲ BUY</option><option value="DOWN">▼ SELL</option></select>
@@ -262,7 +247,7 @@
             </div>
 
             <div class="tf-box">
-              <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800;">TIMEFRAME 1m (4 JAM)</span>
+              <span style="font-size: 0.7rem; color: var(--accent-green); font-weight: 800;">1m (BERLAKU 4 JAM)</span>
               <div class="form-group" style="margin-top: 8px;">
                 <label>ARAH</label>
                 <select id="dir-1m"><option value="UP">▲ BUY</option><option value="DOWN">▼ SELL</option></select>
@@ -273,7 +258,7 @@
             </div>
 
             <div class="tf-box">
-              <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800;">TIMEFRAME 5m (8 JAM)</span>
+              <span style="font-size: 0.7rem; color: var(--accent-green); font-weight: 800;">5m (BERLAKU 8 JAM)</span>
               <div class="form-group" style="margin-top: 8px;">
                 <label>ARAH</label>
                 <select id="dir-5m"><option value="UP">▲ BUY</option><option value="DOWN">▼ SELL</option></select>
@@ -282,13 +267,14 @@
               <div class="form-group"><label>TP</label><input type="text" id="tp-5m" placeholder="66500" required></div>
               <div class="form-group"><label>SL</label><input type="text" id="sl-5m" placeholder="64500" required></div>
             </div>
+
           </div>
 
           <button type="submit" id="btn-publish" class="btn btn-green">PUBLIKASIKAN SEMUA TIMEFRAME</button>
         </form>
       </div>
 
-      <!-- Card Sinyal Aktif Master -->
+      <!-- Card Sinyal Master Aktif -->
       <div class="card">
         <div class="card-title">SINYAL MASTER AKTIF DI DATABASE</div>
         <div class="table-responsive">
@@ -319,14 +305,14 @@
     import { db } from "./firebase-config.js";
     import { collection, doc, setDoc, deleteDoc, onSnapshot, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // 1. MANAJEMEN USER (Firestore Document List)
+    // 1. MANAJEMEN USER
     const userTbody = document.getElementById("user-list-tbody");
     const formUser = document.getElementById("form-create-user");
 
     onSnapshot(collection(db, "users"), (snapshot) => {
       userTbody.innerHTML = "";
       if (snapshot.empty) {
-        userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--text-muted);">Belum ada user registered.</td></tr>`;
+        userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--text-muted);">Belum ada user.</td></tr>`;
         return;
       }
       snapshot.forEach(docSnap => {
@@ -334,8 +320,8 @@
         userTbody.innerHTML += `
           <tr>
             <td>${u.email}</td>
-            <td>
-              <button class="btn btn-red" style="padding:4px 8px; font-size:0.7rem;" onclick="deleteUser('${docSnap.id}')">Hapus</button>
+            <td style="text-align: right;">
+              <button class="btn btn-red" style="padding:4px 8px; font-size:0.7rem; width:auto;" onclick="deleteUser('${docSnap.id}')">Hapus</button>
             </td>
           </tr>
         `;
@@ -360,14 +346,14 @@
           password: pwd,
           createdAt: serverTimestamp()
         });
-        alert("User berhasil didaftarkan ke Database!");
+        alert("User berhasil ditambahkan!");
         formUser.reset();
       } catch (err) {
         alert("Error: " + err.message);
       }
     });
 
-    // 2. GENERATE ALL TIMEFRAMES FOR SELECTED PAIR
+    // 2. GENERATE ALL TIMEFRAMES
     const formSignal = document.getElementById("form-generate-signals");
     const btnPublish = document.getElementById("btn-publish");
 
@@ -378,7 +364,7 @@
 
       const pair = document.getElementById("signal-pair").value;
       const nowMs = new Date().getTime();
-      const twoWeeksMs = nowMs + (14 * 24 * 60 * 60 * 1000); // Bertahan 2 Minggu di Master DB
+      const twoWeeksMs = nowMs + (14 * 24 * 60 * 60 * 1000);
 
       const timeframes = [
         {
@@ -408,14 +394,12 @@
       ];
 
       try {
-        // Hapus sinyal lama untuk pair tersebut
         const q = query(collection(db, "admin_master_signals"), where("pair", "==", pair));
         const oldDocs = await getDocs(q);
         const deletes = [];
         oldDocs.forEach(d => deletes.push(deleteDoc(doc(db, "admin_master_signals", d.id))));
         await Promise.all(deletes);
 
-        // Simpan 3 sinyal baru sekaligus
         const savePromises = timeframes.map(item => {
           const newRef = doc(collection(db, "admin_master_signals"));
           return setDoc(newRef, {
@@ -432,7 +416,7 @@
         });
 
         await Promise.all(savePromises);
-        alert(`Sinyal untuk ${pair} (15s, 1m, 5m) berhasil dipublikasikan!`);
+        alert(`Sinyal ${pair} (15s, 1m, 5m) berhasil terpublikasi!`);
       } catch (err) {
         alert("Gagal mempublikasikan: " + err.message);
       } finally {
@@ -441,7 +425,7 @@
       }
     });
 
-    // 3. LISTEN & DISPLAY MASTER SIGNALS
+    // 3. LISTEN MASTER SIGNALS
     onSnapshot(collection(db, "admin_master_signals"), (snapshot) => {
       const tbody = document.getElementById("signal-master-tbody");
       tbody.innerHTML = "";
