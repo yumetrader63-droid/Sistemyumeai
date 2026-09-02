@@ -8,7 +8,6 @@
   
   <style>
     :root {
-      /* Palette Warna Dark Solid Trading Platform */
       --bg-canvas: #0b0e11;
       --bg-card: #151a21;
       --bg-input: #1e242d;
@@ -43,34 +42,26 @@
       overflow-x: hidden;
     }
 
-    /* Container utama dengan animasi slide-up */
     .terminal-container {
       width: 100%;
       max-width: 440px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      animation: containerFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: containerFadeIn 0.5s ease-out;
     }
 
     @keyframes containerFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(16px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Card Standard Base */
+    /* Base Card Style */
     .card-base {
       background: var(--bg-card);
       border: 1px solid var(--border-dark);
       border-radius: 12px;
       padding: 14px 16px;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
     /* Header Bar */
@@ -90,7 +81,6 @@
       gap: 8px;
     }
 
-    /* Animasi pulse status indicator */
     .status-dot {
       width: 8px;
       height: 8px;
@@ -115,30 +105,18 @@
       font-size: 0.75rem;
       font-weight: 800;
       cursor: pointer;
-      transition: all 0.2s ease;
     }
 
-    .btn-logout:hover {
-      background: var(--red-trade);
-      color: #ffffff;
-      transform: translateY(-1px);
-    }
-
-    .btn-logout:active {
-      transform: scale(0.95);
-    }
-
-    /* 1. Live Server Clock */
+    /* Server Clock */
     .clock-card {
       text-align: center;
-      padding: 18px 16px;
+      padding: 16px;
     }
 
     .clock-label {
       font-size: 0.68rem;
       font-weight: 800;
       color: var(--text-muted);
-      letter-spacing: 1px;
       margin-bottom: 4px;
     }
 
@@ -146,12 +124,11 @@
       font-size: 2rem;
       font-weight: 800;
       color: var(--accent-green);
-      font-variant-numeric: tabular-nums;
       font-family: monospace;
       text-shadow: 0 0 10px var(--green-glow);
     }
 
-    /* 2. User Email Box */
+    /* Account Box */
     .user-card {
       display: flex;
       justify-content: space-between;
@@ -163,7 +140,6 @@
       font-size: 0.68rem;
       font-weight: 700;
       color: var(--text-muted);
-      text-transform: uppercase;
     }
 
     .email-wrapper {
@@ -175,7 +151,6 @@
     .user-email {
       font-size: 0.85rem;
       font-weight: 700;
-      color: var(--text-main);
       font-family: monospace;
     }
 
@@ -186,54 +161,53 @@
       cursor: pointer;
       display: flex;
       align-items: center;
-      transition: color 0.2s ease, transform 0.2s ease;
     }
 
-    .btn-icon:hover {
-      color: var(--accent-green);
-      transform: scale(1.1);
-    }
+    .btn-icon svg { width: 16px; height: 16px; fill: currentColor; }
 
-    .btn-icon svg {
-      width: 16px;
-      height: 16px;
-      fill: currentColor;
-    }
-
-    /* 3. Control Panel Trading Card */
+    /* Control Panel Card */
     .panel-card {
       display: flex;
       flex-direction: column;
       gap: 14px;
     }
 
-    .panel-group label {
+    .panel-label {
       display: block;
       font-size: 0.7rem;
       font-weight: 800;
       color: var(--text-muted);
       margin-bottom: 6px;
-      letter-spacing: 0.5px;
     }
 
-    .select-pair {
+    /* Trigger Trigger Asset Selector (Modern Popup Trigger) */
+    .asset-selector-trigger {
       width: 100%;
-      padding: 12px;
+      padding: 12px 14px;
       background: var(--bg-input);
       border: 1px solid var(--border-dark);
       border-radius: 8px;
       color: var(--text-main);
-      font-size: 0.88rem;
-      font-weight: 700;
-      outline: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
       transition: border-color 0.2s ease;
     }
 
-    .select-pair:focus {
+    .asset-selector-trigger:hover {
       border-color: var(--accent-green);
     }
 
-    /* Timeframe Selector Grid */
+    .selected-asset-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 0.9rem;
+    }
+
+    /* Timeframe Grid */
     .tf-selector {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -250,12 +224,6 @@
       font-weight: 700;
       cursor: pointer;
       text-align: center;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .tf-btn:hover {
-      border-color: var(--accent-green);
-      color: var(--text-main);
     }
 
     .tf-btn.active {
@@ -266,7 +234,7 @@
       box-shadow: 0 0 12px var(--green-glow);
     }
 
-    /* Tombol Generate Signal */
+    /* Generate Button */
     .btn-execute {
       width: 100%;
       padding: 14px;
@@ -277,52 +245,38 @@
       font-weight: 800;
       font-size: 0.95rem;
       cursor: pointer;
-      letter-spacing: 0.5px;
       transition: all 0.2s ease;
     }
 
     .btn-execute:hover {
       background: var(--accent-green-hover);
       box-shadow: 0 0 16px var(--green-glow);
-      transform: translateY(-1px);
-    }
-
-    .btn-execute:active {
-      transform: scale(0.98);
     }
 
     .btn-execute:disabled {
       background: var(--bg-input);
       color: var(--text-muted);
       cursor: not-allowed;
-      animation: btnProcessing 1.2s infinite ease-in-out;
     }
 
-    @keyframes btnProcessing {
-      0% { opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { opacity: 0.6; }
+    /* KOTAK SIGNAL TERPISAH (Terpisah dari Panel) */
+    .signal-container-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    /* Styling Kotak Sinyal Standard (Sinyal 1 & Sinyal 2) */
     .signal-box {
-      margin-top: 4px;
-      background: var(--bg-input);
+      background: var(--bg-card);
       border: 1px solid var(--border-dark);
-      border-radius: 8px;
+      border-radius: 12px;
       padding: 14px;
-      animation: signalPopUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      animation: signalPopUp 0.3s ease-out;
     }
 
     @keyframes signalPopUp {
-      from {
-        opacity: 0;
-        transform: scale(0.95);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     .signal-header {
@@ -334,30 +288,17 @@
       margin-bottom: 10px;
     }
 
-    .signal-pair {
-      font-size: 0.95rem;
-      font-weight: 800;
-    }
+    .signal-pair { font-size: 0.95rem; font-weight: 800; }
 
     .signal-type {
       font-size: 0.8rem;
       font-weight: 800;
       padding: 4px 10px;
       border-radius: 4px;
-      letter-spacing: 0.5px;
     }
 
-    .type-buy {
-      background: var(--accent-green);
-      color: #000000;
-      box-shadow: 0 0 8px var(--green-glow);
-    }
-
-    .type-sell {
-      background: var(--red-trade);
-      color: #ffffff;
-      box-shadow: 0 0 8px rgba(255, 82, 82, 0.3);
-    }
+    .type-buy { background: var(--accent-green); color: #000000; }
+    .type-sell { background: var(--red-trade); color: #ffffff; }
 
     .signal-grid {
       display: grid;
@@ -366,7 +307,7 @@
     }
 
     .grid-item {
-      background: var(--bg-card);
+      background: var(--bg-input);
       padding: 8px 10px;
       border-radius: 6px;
       border: 1px solid var(--border-dark);
@@ -377,47 +318,117 @@
       font-size: 0.65rem;
       color: var(--text-muted);
       font-weight: 700;
-      margin-bottom: 2px;
     }
 
-    .grid-item b {
-      font-size: 0.85rem;
-    }
+    .grid-item b { font-size: 0.85rem; }
 
-    /* Placeholder Sinyal Kosong (Tanda Tanya Besar) */
+    /* Empty Signal Box dengan Icon ? */
     .empty-signal-box {
-      min-height: 140px;
+      min-height: 130px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 8px;
-      background: var(--bg-input);
+      gap: 6px;
+      background: var(--bg-card);
       border: 1px dashed var(--border-dark);
-      border-radius: 8px;
-      padding: 20px;
-      text-align: center;
+      border-radius: 12px;
+      padding: 16px;
     }
 
     .question-mark {
-      font-size: 3rem;
+      font-size: 2.8rem;
       font-weight: 800;
       color: var(--accent-green);
       text-shadow: 0 0 16px var(--green-glow);
-      line-height: 1;
-      animation: questionFloat 2s ease-in-out infinite;
+      animation: floatQuestion 2s ease-in-out infinite;
     }
 
-    @keyframes questionFloat {
+    @keyframes floatQuestion {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
+      50% { transform: translateY(-4px); }
     }
 
     .empty-text {
       font-size: 0.72rem;
       font-weight: 700;
       color: var(--text-muted);
-      letter-spacing: 0.8px;
+    }
+
+    /* MODAL POPUP SELECT ASSET (Olymp Trade Style) */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      padding: 16px;
+    }
+
+    .modal-content {
+      width: 100%;
+      max-width: 400px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-dark);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 80vh;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title { font-size: 0.9rem; font-weight: 800; color: var(--accent-green); }
+
+    .btn-close-modal {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .asset-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow-y: auto;
+    }
+
+    .asset-item {
+      padding: 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-dark);
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .asset-item:hover {
+      border-color: var(--accent-green);
+      background: rgba(0, 230, 118, 0.05);
+    }
+
+    .asset-name { font-weight: 800; font-size: 0.88rem; }
+    .asset-badge {
+      font-size: 0.65rem;
+      padding: 2px 6px;
+      background: rgba(0, 230, 118, 0.15);
+      color: var(--accent-green);
+      border-radius: 4px;
+      font-weight: 700;
     }
   </style>
 </head>
@@ -445,30 +456,26 @@
       <span class="user-label">ACCOUNT</span>
       <div class="email-wrapper">
         <span id="user-email-text" class="user-email">loading...</span>
-        <button id="toggle-email" class="btn-icon" title="Toggle Email Visibility">
-          <svg id="eye-email-icon" viewBox="0 0 24 24">
-            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-          </svg>
+        <button id="toggle-email" class="btn-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
         </button>
       </div>
     </div>
 
-    <!-- 3. Control Panel Trading Card -->
+    <!-- 3. KOTAK CONTROL PANEL (Terpisah) -->
     <div class="card-base panel-card">
-      
-      <div class="panel-group">
-        <label>SELECT ASSET / PAIR</label>
-        <select id="pair-select" class="select-pair">
-          <option value="BTC/USDT">BTC / USDT (Crypto)</option>
-          <option value="ETH/USDT">ETH / USDT (Crypto)</option>
-          <option value="SOL/USDT">SOL / USDT (Crypto)</option>
-          <option value="EUR/USD">EUR / USD (Forex)</option>
-          <option value="GBP/USD">GBP / USD (Forex)</option>
-        </select>
+      <div>
+        <span class="panel-label">SELECT ASSET</span>
+        <div id="open-asset-modal" class="asset-selector-trigger">
+          <div class="selected-asset-info">
+            <span id="current-asset-text">BTC/USDT</span>
+          </div>
+          <span style="color: var(--accent-green); font-size: 0.8rem;">CHANGE ▼</span>
+        </div>
       </div>
 
-      <div class="panel-group">
-        <label>EXPIRATION / TIMEFRAME</label>
+      <div>
+        <span class="panel-label">TIMEFRAME</span>
         <div class="tf-selector">
           <button class="tf-btn active" data-tf="15s">15 DETIK</button>
           <button class="tf-btn" data-tf="1m">1 MENIT</button>
@@ -477,68 +484,84 @@
       </div>
 
       <button id="btn-generate" class="btn-execute">GENERATE SIGNAL</button>
+    </div>
 
-      <!-- 4. Kotak Signal Utama 1 (Hasil Analysis) -->
+    <!-- 4. KOTAK SIGNAL TERPISAH (Sinyal 1 & Sinyal 2) -->
+    <div class="signal-container-card">
+      
+      <!-- Sinyal Utama 1 (Default Placeholder ?) -->
+      <div id="empty-signal-1" class="empty-signal-box">
+        <div class="question-mark">?</div>
+        <div class="empty-text">PRIMARY SIGNAL WAITING</div>
+      </div>
+
       <div id="signal-box-1" class="signal-box" style="display: none;">
         <div class="signal-header">
           <span id="res-pair-1" class="signal-pair">BTC/USDT</span>
           <span id="res-type-1" class="signal-type type-buy">BUY</span>
         </div>
         <div class="signal-grid">
-          <div class="grid-item">
-            <span>ENTRY AREA</span>
-            <b id="res-entry-1">-</b>
-          </div>
-          <div class="grid-item">
-            <span>TARGET TP</span>
-            <b id="res-tp-1" style="color: var(--accent-green);">-</b>
-          </div>
-          <div class="grid-item">
-            <span>STOP LOSS</span>
-            <b id="res-sl-1" style="color: var(--red-trade);">-</b>
-          </div>
-          <div class="grid-item">
-            <span>TIMEFRAME</span>
-            <b id="res-tf-1">-</b>
-          </div>
+          <div class="grid-item"><span>ENTRY AREA</span><b id="res-entry-1">-</b></div>
+          <div class="grid-item"><span>TARGET TP</span><b id="res-tp-1" style="color: var(--accent-green);">-</b></div>
+          <div class="grid-item"><span>STOP LOSS</span><b id="res-sl-1" style="color: var(--red-trade);">-</b></div>
+          <div class="grid-item"><span>TIMEFRAME</span><b id="res-tf-1">-</b></div>
         </div>
       </div>
 
-      <!-- 5. Kotak Signal 2 (Secondary/Placeholder Tanda Tanya) -->
-      <!-- Tampilan Default Jika Belum Ada Sinyal 2 -->
+      <!-- Sinyal Cadangan 2 (Default Placeholder ?) -->
       <div id="empty-signal-2" class="empty-signal-box">
         <div class="question-mark">?</div>
         <div class="empty-text">SECONDARY SIGNAL EMPTY</div>
       </div>
 
-      <!-- Tampilan Jika Sinyal 2 Ada -->
       <div id="signal-box-2" class="signal-box" style="display: none;">
         <div class="signal-header">
           <span id="res-pair-2" class="signal-pair">BTC/USDT</span>
           <span id="res-type-2" class="signal-type type-buy">BUY</span>
         </div>
         <div class="signal-grid">
-          <div class="grid-item">
-            <span>ENTRY AREA</span>
-            <b id="res-entry-2">-</b>
-          </div>
-          <div class="grid-item">
-            <span>TARGET TP</span>
-            <b id="res-tp-2" style="color: var(--accent-green);">-</b>
-          </div>
-          <div class="grid-item">
-            <span>STOP LOSS</span>
-            <b id="res-sl-2" style="color: var(--red-trade);">-</b>
-          </div>
-          <div class="grid-item">
-            <span>TIMEFRAME</span>
-            <b id="res-tf-2">-</b>
-          </div>
+          <div class="grid-item"><span>ENTRY AREA</span><b id="res-entry-2">-</b></div>
+          <div class="grid-item"><span>TARGET TP</span><b id="res-tp-2" style="color: var(--accent-green);">-</b></div>
+          <div class="grid-item"><span>STOP LOSS</span><b id="res-sl-2" style="color: var(--red-trade);">-</b></div>
+          <div class="grid-item"><span>TIMEFRAME</span><b id="res-tf-2">-</b></div>
         </div>
       </div>
 
     </div>
 
+  </div>
+
+  <!-- MODAL POPUP SELECT ASSET -->
+  <div id="asset-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <span class="modal-title">SELECT ASSET</span>
+        <button id="close-asset-modal" class="btn-close-modal">✕</button>
+      </div>
+
+      <div class="asset-list">
+        <div class="asset-item" data-pair="BTC/USDT">
+          <span class="asset-name">BTC / USDT</span>
+          <span class="asset-badge">CRYPTO</span>
+        </div>
+        <div class="asset-item" data-pair="ETH/USDT">
+          <span class="asset-name">ETH / USDT</span>
+          <span class="asset-badge">CRYPTO</span>
+        </div>
+        <div class="asset-item" data-pair="SOL/USDT">
+          <span class="asset-name">SOL / USDT</span>
+          <span class="asset-badge">CRYPTO</span>
+        </div>
+        <div class="asset-item" data-pair="EUR/USD">
+          <span class="asset-name">EUR / USD</span>
+          <span class="asset-badge">FOREX</span>
+        </div>
+        <div class="asset-item" data-pair="GBP/USD">
+          <span class="asset-name">GBP / USD</span>
+          <span class="asset-badge">FOREX</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script type="module">
@@ -548,9 +571,10 @@
 
     let rawEmail = "";
     let isEmailHidden = false;
+    let selectedPair = "BTC/USDT";
     let selectedTimeframe = "15s";
 
-    // 1. Authenticated User Check
+    // 1. Auth State Check
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         window.location.href = "index.html";
@@ -560,10 +584,8 @@
       }
     });
 
-    // 2. Hide / Show Email Feature
+    // 2. Hide / Show Email
     const emailText = document.getElementById("user-email-text");
-    const toggleEmailBtn = document.getElementById("toggle-email");
-
     function updateEmailDisplay() {
       if (isEmailHidden) {
         const parts = rawEmail.split("@");
@@ -572,8 +594,7 @@
         emailText.innerText = rawEmail;
       }
     }
-
-    toggleEmailBtn.addEventListener("click", () => {
+    document.getElementById("toggle-email").addEventListener("click", () => {
       isEmailHidden = !isEmailHidden;
       updateEmailDisplay();
     });
@@ -589,7 +610,24 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // 4. Timeframe Selector
+    // 4. Custom Asset Modal Popup Logic
+    const assetModal = document.getElementById("asset-modal");
+    const openModalBtn = document.getElementById("open-asset-modal");
+    const closeModalBtn = document.getElementById("close-asset-modal");
+    const currentAssetText = document.getElementById("current-asset-text");
+
+    openModalBtn.addEventListener("click", () => assetModal.style.display = "flex");
+    closeModalBtn.addEventListener("click", () => assetModal.style.display = "none");
+
+    document.querySelectorAll(".asset-item").forEach(item => {
+      item.addEventListener("click", () => {
+        selectedPair = item.getAttribute("data-pair");
+        currentAssetText.innerText = selectedPair;
+        assetModal.style.display = "none";
+      });
+    });
+
+    // 5. Timeframe Selector
     const tfButtons = document.querySelectorAll(".tf-btn");
     tfButtons.forEach(btn => {
       btn.addEventListener("click", () => {
@@ -599,20 +637,18 @@
       });
     });
 
-    // 5. Query Signal Realtime dari Database Firebase
+    // 6. Generate Signal Logic
     const btnGenerate = document.getElementById("btn-generate");
     const signalBox1 = document.getElementById("signal-box-1");
+    const emptySignal1 = document.getElementById("empty-signal-1");
     const signalBox2 = document.getElementById("signal-box-2");
     const emptySignal2 = document.getElementById("empty-signal-2");
 
     btnGenerate.addEventListener("click", async () => {
-      const selectedPair = document.getElementById("pair-select").value;
-      
       btnGenerate.innerText = "ANALYZING MARKET...";
       btnGenerate.disabled = true;
 
       try {
-        // Mengambil hingga 2 sinyal terbaru
         const q = query(
           collection(db, "signals"),
           where("pair", "==", selectedPair),
@@ -625,7 +661,7 @@
         if (!querySnapshot.empty) {
           const docs = querySnapshot.docs;
 
-          // Process Signal 1
+          // Render Signal 1
           const data1 = docs[0].data();
           document.getElementById("res-pair-1").innerText = data1.pair;
           const isBuy1 = data1.type.toUpperCase().includes("BUY");
@@ -638,49 +674,14 @@
           document.getElementById("res-sl-1").innerText = data1.sl;
           document.getElementById("res-tf-1").innerText = selectedTimeframe.toUpperCase();
 
-          signalBox1.style.display = "none";
-          setTimeout(() => { signalBox1.style.display = "block"; }, 50);
+          emptySignal1.style.display = "none";
+          signalBox1.style.display = "block";
 
-          // Process Signal 2 jika ada
+          // Render Signal 2
           if (docs.length > 1) {
             const data2 = docs[1].data();
             document.getElementById("res-pair-2").innerText = data2.pair;
             const isBuy2 = data2.type.toUpperCase().includes("BUY");
             const resType2 = document.getElementById("res-type-2");
             resType2.innerText = isBuy2 ? "BUY / UP" : "SELL / DOWN";
-            resType2.className = `signal-type ${isBuy2 ? "type-buy" : "type-sell"}`;
-
-            document.getElementById("res-entry-2").innerText = data2.entry;
-            document.getElementById("res-tp-2").innerText = data2.tp;
-            document.getElementById("res-sl-2").innerText = data2.sl;
-            document.getElementById("res-tf-2").innerText = selectedTimeframe.toUpperCase();
-
-            emptySignal2.style.display = "none";
-            signalBox2.style.display = "block";
-          } else {
-            // Jika sinyal ke-2 tidak ada, tampilkan kotak tanda tanya
-            signalBox2.style.display = "none";
-            emptySignal2.style.display = "flex";
-          }
-
-        } else {
-          alert(`Sinyal untuk pair ${selectedPair} belum diinput.`);
-          signalBox1.style.display = "none";
-          signalBox2.style.display = "none";
-          emptySignal2.style.display = "flex";
-        }
-      } catch (err) {
-        alert("Gagal mengambil data sinyal: " + err.message);
-      } finally {
-        btnGenerate.innerText = "GENERATE SIGNAL";
-        btnGenerate.disabled = false;
-      }
-    });
-
-    // 6. Sign Out
-    document.getElementById("btn-logout").addEventListener("click", () => {
-      signOut(auth).then(() => window.location.href = "index.html");
-    });
-  </script>
-</body>
-</html>
+            resType2.className = `signal
