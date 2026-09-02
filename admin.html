@@ -2,130 +2,309 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - Generate Signals</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Admin Panel - VIP Signal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
   <style>
     :root {
-      --bg-canvas: #090c0f; --bg-card: #14181f; --bg-input: #1d232c;
-      --accent-green: #00e676; --red-trade: #ff5252; --text-main: #ffffff;
+      --bg-canvas: #090c0f;
+      --bg-card: #14181f;
+      --bg-input: #1d232c;
+      --accent-green: #00e676;
+      --red-trade: #ff5252;
       --border-dark: #232933;
+      --text-main: #ffffff;
+      --text-muted: #848e9c;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background-color: var(--bg-canvas); color: var(--text-main); padding: 20px; }
-    
-    .container { max-width: 600px; margin: 0 auto; background: var(--bg-card); padding: 20px; border-radius: 12px; border: 1px solid var(--border-dark); }
-    h2 { margin-bottom: 20px; color: var(--accent-green); text-align: center; }
-    
-    .form-group { margin-bottom: 15px; }
-    label { display: block; font-size: 0.85rem; margin-bottom: 8px; color: #848e9c; font-weight: 600; }
-    select, input { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-dark); color: #fff; border-radius: 8px; }
-    
-    .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; margin-top: 10px; }
+    body { background-color: var(--bg-canvas); color: var(--text-main); min-height: 100vh; padding: 16px; }
+
+    .admin-layout {
+      max-width: 1300px; margin: 0 auto;
+      display: grid; grid-template-columns: 340px 1fr; gap: 20px;
+    }
+    @media (max-width: 992px) { .admin-layout { grid-template-columns: 1fr; } }
+
+    .card { background: var(--bg-card); border: 1px solid var(--border-dark); border-radius: 14px; padding: 18px; margin-bottom: 20px; }
+    .card-title { font-size: 0.95rem; font-weight: 800; color: var(--accent-green); margin-bottom: 14px; text-transform: uppercase; }
+    .form-group { margin-bottom: 12px; }
+
+    label { display: block; font-size: 0.72rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; }
+    input, select {
+      width: 100%; padding: 12px; background: var(--bg-input);
+      border: 1px solid var(--border-dark); border-radius: 8px; color: var(--text-main); font-weight: 700; font-size: 0.85rem;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--accent-green); }
+
+    .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: 800; font-size: 0.85rem; cursor: pointer; transition: 0.2s; }
     .btn-green { background: var(--accent-green); color: #000; }
-    
-    .preview-box { margin-top: 20px; background: var(--bg-input); padding: 15px; border-radius: 8px; max-height: 250px; overflow-y: auto; font-size: 0.85rem; }
-    .item-up { color: var(--accent-green); font-weight: bold; }
-    .item-down { color: var(--red-trade); font-weight: bold; }
+    .btn-green:active { transform: scale(0.98); }
+    .btn-red { background: rgba(255, 82, 82, 0.15); color: var(--red-trade); border: 1px solid var(--red-trade); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .table-responsive { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; white-space: nowrap; }
+    th { text-align: left; padding: 10px; background: var(--bg-input); color: var(--text-muted); font-size: 0.7rem; font-weight: 800; border-bottom: 1px solid var(--border-dark); }
+    td { padding: 10px; border-bottom: 1px solid var(--border-dark); font-weight: 700; }
+
+    .dir-up { color: var(--accent-green); }
+    .dir-down { color: var(--red-trade); }
+    .schedule-tag { display: inline-block; padding: 4px 8px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-dark); border-radius: 6px; margin: 2px; font-size: 0.75rem; }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h2>PANEL ADMIN - GENERATE SIGNAL ACAK</h2>
+  <div class="admin-layout">
     
-    <div class="form-group">
-      <label>PILIH PAIR</label>
-      <select id="admin-pair">
-        <option value="BTC/USDT">BTC/USDT</option>
-        <option value="ETH/USDT">ETH/USDT</option>
-        <option value="SOL/USDT">SOL/USDT</option>
-        <option value="EUR/USD">EUR/USD</option>
-      </select>
+    <!-- KOLOM KIRI: MANAJEMEN USER -->
+    <div>
+      <div class="card">
+        <div class="card-title">TAMBAH USER BARU (AUTH & FIRESTORE)</div>
+        <form id="form-create-user">
+          <div class="form-group">
+            <label>EMAIL USER</label>
+            <input type="email" id="new-email" placeholder="user@vip.com" required>
+          </div>
+          <div class="form-group">
+            <label>PASSWORD</label>
+            <input type="password" id="new-password" placeholder="Minimal 6 karakter" required>
+          </div>
+          <button type="submit" id="btn-add-user" class="btn btn-green">TAMBAH USER</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title">DAFTAR USER DATABASE</div>
+        <div class="table-responsive">
+          <table>
+            <thead><tr><th>EMAIL</th><th style="text-align: right;">AKSI</th></tr></thead>
+            <tbody id="user-list-tbody">
+              <tr><td colspan="2" style="color: var(--text-muted);">Memuat user...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label>PILIH TIMEFRAME</label>
-      <select id="admin-tf">
-        <option value="15s">15 Detik</option>
-        <option value="1m" selected>1 Menit</option>
-        <option value="5m">5 Menit</option>
-      </select>
+    <!-- KOLOM KANAN: GENERATOR SINYAL -->
+    <div>
+      <div class="card">
+        <div class="card-title">GENERATE SINYAL ACAK (ALL TIMEFRAMES)</div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px;">
+          Pilih Pair, lalu klik generate. Sistem otomatis membuat ratusan jadwal secara <b>acak murni</b> untuk timeframe <b>15s, 1m, dan 5m sekaligus</b>.
+        </p>
+
+        <form id="form-generate-signals">
+          <div class="form-group">
+            <label>PILIH PAIR ASSET</label>
+            <select id="signal-pair">
+              <option value="BTC/USDT">BTC/USDT</option>
+              <option value="ETH/USDT">ETH/USDT</option>
+              <option value="SOL/USDT">SOL/USDT</option>
+              <option value="EUR/USD">EUR/USD</option>
+              <option value="GBP/USD">GBP/USD</option>
+            </select>
+          </div>
+          <button type="submit" id="btn-publish" class="btn btn-green">GENERATE ALL TIMEFRAME (15s, 1m, 5m)</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <div class="card-title">DAFTAR SINYAL MASTER DI DATABASE</div>
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>PAIR</th>
+                <th>TF</th>
+                <th>TOTAL JADWAL</th>
+                <th>SAMPLE ACAK AWAL</th>
+              </tr>
+            </thead>
+            <tbody id="signal-master-tbody">
+              <tr><td colspan="4" style="color: var(--text-muted);">Memuat sinyal...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
-    <button id="btn-generate" class="btn btn-green">GENERATE & SIMPAN KE DATABASE</button>
-
-    <div class="preview-box" id="preview-box">
-      <em>List sinyal acak akan muncul di sini setelah di-generate...</em>
-    </div>
   </div>
 
   <script type="module">
-    import { db } from "./firebase-config.js";
-    import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { auth, db } from "./firebase-config.js";
+    import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { collection, doc, setDoc, deleteDoc, onSnapshot, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    const btnGenerate = document.getElementById("btn-generate");
-    const previewBox = document.getElementById("preview-box");
+    // ==========================================
+    // 1. FITUR MANAJEMEN USER (KIRI)
+    // ==========================================
+    const userTbody = document.getElementById("user-list-tbody");
+    const formUser = document.getElementById("form-create-user");
+    const btnAddUser = document.getElementById("btn-add-user");
 
-    btnGenerate.addEventListener("click", async () => {
-      btnGenerate.innerText = "MENYIMPAN...";
-      
-      const pair = document.getElementById("admin-pair").value;
-      const tf = document.getElementById("admin-tf").value;
-      
-      // Menentukan interval waktu berdasarkan timeframe
-      let intervalMs = 60000; // default 1 menit
-      if (tf === "15s") intervalMs = 15000;
-      if (tf === "5m") intervalMs = 300000;
-
-      const schedule = [];
-      const now = new Date();
-      let previewHTML = `<h4>Jadwal Tersimpan (${pair} - ${tf}):</h4><br>`;
-
-      // Membuat 20 sinyal ke depan secara acak
-      for (let i = 1; i <= 20; i++) {
-        const signalTime = new Date(now.getTime() + (i * intervalMs));
-        const h = String(signalTime.getHours()).padStart(2, '0');
-        const m = String(signalTime.getMinutes()).padStart(2, '0');
-        const s = String(signalTime.getSeconds()).padStart(2, '0');
-        
-        // Format waktu: jika 15 detik pakai detik (HH:MM:SS), jika menit pakai (HH:MM)
-        const timeString = tf === "15s" ? `${h}:${m}:${s}` : `${h}:${m}`;
-        
-        // --- LOGIKA ACAK (RANDOM) ---
-        // Math.random() menghasilkan angka antara 0.0 sampai 1.0
-        // Jika angka di atas 0.5 = UP, jika di bawah 0.5 = DOWN
-        const randomDirection = Math.random() > 0.5 ? "UP" : "DOWN";
-
-        schedule.push({
-          time: timeString,
-          direction: randomDirection
-        });
-
-        const colorClass = randomDirection === "UP" ? "item-up" : "item-down";
-        const arrow = randomDirection === "UP" ? "▲ BUY" : "▼ SELL";
-        previewHTML += `<div style="margin-bottom: 5px;">[${timeString}] - <span class="${colorClass}">${arrow}</span></div>`;
+    // Realtime Listen Data User
+    onSnapshot(collection(db, "users"), (snapshot) => {
+      userTbody.innerHTML = "";
+      if (snapshot.empty) {
+        userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--text-muted);">Belum ada user.</td></tr>`;
+        return;
       }
+      snapshot.forEach(docSnap => {
+        const u = docSnap.data();
+        userTbody.innerHTML += `
+          <tr>
+            <td>${u.email}</td>
+            <td style="text-align: right;">
+              <button class="btn btn-red" style="padding:4px 8px; font-size:0.7rem; width:auto;" onclick="deleteUser('${docSnap.id}')">Hapus</button>
+            </td>
+          </tr>
+        `;
+      });
+    });
+
+    // Fungsi Hapus User Global
+    window.deleteUser = async (uid) => {
+      if (confirm("Hapus user ini dari database?")) {
+        await deleteDoc(doc(db, "users", uid));
+      }
+    };
+
+    // Proses Tambah User
+    formUser.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      btnAddUser.disabled = true;
+      btnAddUser.innerText = "MEMPROSES...";
+
+      const email = document.getElementById("new-email").value.trim();
+      const pwd = document.getElementById("new-password").value.trim();
 
       try {
-        // Menyimpan data ke Firestore (Membuat/Menimpa dokumen master sinyal)
-        const docId = `${pair.replace('/','-')}_${tf}`; // Contoh ID: BTC-USDT_1m
-        await setDoc(doc(db, "admin_master_signals", docId), {
-          pair: pair,
-          timeframe: tf,
-          schedule: schedule,
-          updatedAt: new Date().toISOString()
+        const userCredential = await createUserWithEmailAndPassword(auth, email, pwd);
+        const user = userCredential.user;
+        await setDoc(doc(db, "users", user.uid), {
+          uid: user.uid,
+          email: email,
+          createdAt: serverTimestamp()
+        });
+        alert("Berhasil! User tersimpan.");
+        formUser.reset();
+      } catch (err) {
+        alert("Gagal: " + err.message);
+      } finally {
+        btnAddUser.disabled = false;
+        btnAddUser.innerText = "TAMBAH USER";
+      }
+    });
+
+    // ==========================================
+    // 2. FITUR GENERATE SINYAL ACAK (KANAN)
+    // ==========================================
+    
+    // Fungsi Generate Jadwal Acak
+    function generateRandomSchedule(tf) {
+      const schedule = [];
+      const now = new Date();
+      
+      let stepMs = 0;
+      let totalItems = 200; // Buat 200 sinyal ke depan
+
+      if (tf === "15s") stepMs = 15 * 1000;
+      if (tf === "1m") stepMs = 60 * 1000;
+      if (tf === "5m") stepMs = 5 * 60 * 1000;
+
+      for (let i = 1; i <= totalItems; i++) {
+        const itemTime = new Date(now.getTime() + (i * stepMs));
+        let h = String(itemTime.getHours()).padStart(2, '0');
+        let m = String(itemTime.getMinutes()).padStart(2, '0');
+        let s = String(itemTime.getSeconds()).padStart(2, '0');
+        
+        let timeStr = tf === "15s" ? `${h}:${m}:${s}` : `${h}:${m}`;
+
+        // LOGIKA ACAK MURNI 50:50
+        const randomDir = Math.random() > 0.5 ? "UP" : "DOWN";
+
+        schedule.push({ time: timeStr, direction: randomDir });
+      }
+      return schedule;
+    }
+
+    const formSignal = document.getElementById("form-generate-signals");
+    const btnPublish = document.getElementById("btn-publish");
+
+    formSignal.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      btnPublish.disabled = true;
+      btnPublish.innerText = "GENERATING ALL TIMEFRAME...";
+
+      const pair = document.getElementById("signal-pair").value;
+      const allTimeframes = ["15s", "1m", "5m"];
+      
+      try {
+        // Step 1: Hapus data sinyal lama khusus pair ini
+        const q = query(collection(db, "admin_master_signals"), where("pair", "==", pair));
+        const oldDocs = await getDocs(q);
+        const deletePromises = [];
+        oldDocs.forEach(d => deletePromises.push(deleteDoc(doc(db, "admin_master_signals", d.id))));
+        await Promise.all(deletePromises);
+
+        // Step 2: Generate dan Simpan sinyal baru untuk 15s, 1m, 5m
+        const savePromises = allTimeframes.map(tf => {
+          const schedule = generateRandomSchedule(tf);
+          const docId = `${pair.replace('/','-')}_${tf}`; // Contoh ID: BTC-USDT_1m
+          
+          return setDoc(doc(db, "admin_master_signals", docId), {
+            pair: pair,
+            timeframe: tf,
+            schedule: schedule,
+            updatedAt: serverTimestamp()
+          });
         });
 
-        previewBox.innerHTML = previewHTML;
-        alert("Sinyal acak berhasil di-generate dan disimpan ke database!");
-
-      } catch (error) {
-        console.error(error);
-        alert("Gagal menyimpan sinyal. Cek console log / Rules Firestore Anda.");
+        await Promise.all(savePromises);
+        alert(`SUKSES! Ratusan sinyal acak (15s, 1m, 5m) untuk pair ${pair} berhasil diterbitkan.`);
+      } catch (err) {
+        alert("Gagal mempublikasikan: " + err.message);
       } finally {
-        btnGenerate.innerText = "GENERATE & SIMPAN KE DATABASE";
+        btnPublish.disabled = false;
+        btnPublish.innerText = "GENERATE ALL TIMEFRAME (15s, 1m, 5m)";
       }
+    });
+
+    // ==========================================
+    // 3. TABEL REALTIME SINYAL MASTER
+    // ==========================================
+    onSnapshot(collection(db, "admin_master_signals"), (snapshot) => {
+      const tbody = document.getElementById("signal-master-tbody");
+      tbody.innerHTML = "";
+      if (snapshot.empty) {
+        tbody.innerHTML = `<tr><td colspan="4" style="color:var(--text-muted);">Belum ada sinyal.</td></tr>`;
+        return;
+      }
+      snapshot.forEach(docSnap => {
+        const d = docSnap.data();
+        let sampleHtml = "";
+
+        // Menampilkan 3 sampel jadwal sinyal di tabel agar Admin bisa mengintip
+        if (d.schedule && Array.isArray(d.schedule)) {
+          const samples = d.schedule.slice(0, 3);
+          samples.forEach(item => {
+            const dirIcon = item.direction === "UP" ? `<b class="dir-up">▲ BUY</b>` : `<b class="dir-down">▼ SELL</b>`;
+            sampleHtml += `<span class="schedule-tag"><b>${item.time}</b>: ${dirIcon}</span> `;
+          });
+        }
+
+        tbody.innerHTML += `
+          <tr>
+            <td><b>${d.pair}</b></td>
+            <td><span class="schedule-tag" style="color:var(--accent-green);">${d.timeframe}</span></td>
+            <td>${d.schedule ? d.schedule.length : 0} Jadwal Acak</td>
+            <td>${sampleHtml} ...</td>
+          </tr>
+        `;
+      });
     });
   </script>
 </body>
