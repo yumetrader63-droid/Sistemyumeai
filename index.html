@@ -8,15 +8,19 @@
   
   <style>
     :root {
-      --bg-dark: #050b08;
-      --card-bg: rgba(12, 24, 18, 0.88);
-      --card-border: rgba(16, 185, 129, 0.25);
-      --accent-neon: #00ff87;
-      --accent-green: #10b981;
-      --neon-glow: rgba(0, 255, 135, 0.15);
+      /* Terpisah Antara Dark Canvas & Green Accent */
+      --bg-dark-base: #040806;
+      --bg-dark-surface: rgba(10, 20, 15, 0.90);
+      
+      --accent-green-main: #10b981;
+      --accent-green-neon: #00ff87;
+      --green-glow: rgba(0, 255, 135, 0.18);
+      --border-green: rgba(16, 185, 129, 0.3);
+      
       --text-main: #f0fdf4;
       --text-muted: #9ca3af;
       --red-accent: #ff4d4d;
+      --telegram-blue: #229ED9;
     }
 
     * {
@@ -28,7 +32,7 @@
     }
 
     body {
-      background-color: var(--bg-dark);
+      background-color: var(--bg-dark-base);
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
@@ -36,21 +40,21 @@
       align-items: center;
       padding: 16px;
       background-image: 
-        radial-gradient(circle at 50% 0%, rgba(0, 255, 135, 0.15) 0%, transparent 60%),
-        radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.08) 0%, transparent 50%);
+        radial-gradient(circle at 50% 0%, rgba(0, 255, 135, 0.12) 0%, transparent 65%),
+        radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.06) 0%, transparent 50%);
       background-attachment: fixed;
     }
 
     .card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: var(--bg-dark-surface);
+      border: 1px solid var(--border-green);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
       border-radius: 24px;
-      padding: 30px 24px;
+      padding: 32px 24px;
       width: 100%;
       max-width: 390px;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
       position: relative;
       overflow: hidden;
     }
@@ -62,7 +66,7 @@
       left: 0;
       width: 100%;
       height: 2px;
-      background: linear-gradient(90deg, transparent, var(--accent-neon), transparent);
+      background: linear-gradient(90deg, transparent, var(--accent-green-neon), transparent);
     }
 
     .brand-badge {
@@ -75,7 +79,7 @@
       border-radius: 30px;
       font-size: 0.68rem;
       font-weight: 800;
-      color: var(--accent-neon);
+      color: var(--accent-green-neon);
       letter-spacing: 0.8px;
       margin-bottom: 12px;
     }
@@ -88,7 +92,7 @@
     .title h2 {
       font-size: 1.5rem;
       font-weight: 800;
-      background: linear-gradient(90deg, #ffffff, var(--accent-neon));
+      background: linear-gradient(90deg, #ffffff, var(--accent-green-neon));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: 0.5px;
@@ -113,11 +117,18 @@
       letter-spacing: 0.5px;
     }
 
+    /* Input & Password Container */
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
     .form-control {
       width: 100%;
-      padding: 13px 15px;
-      background: rgba(0, 0, 0, 0.45);
-      border: 1px solid var(--card-border);
+      padding: 13px 42px 13px 15px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-green);
       border-radius: 12px;
       color: var(--text-main);
       font-size: 0.9rem;
@@ -126,22 +137,47 @@
     }
 
     .form-control:focus {
-      border-color: var(--accent-neon);
-      box-shadow: 0 0 12px var(--neon-glow);
+      border-color: var(--accent-green-neon);
+      box-shadow: 0 0 12px var(--green-glow);
+    }
+
+    /* Toggle Eye Icon */
+    .toggle-password {
+      position: absolute;
+      right: 14px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: color 0.2s ease;
+    }
+
+    .toggle-password:hover {
+      color: var(--accent-green-neon);
+    }
+
+    .toggle-password svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
     }
 
     .btn-submit {
       width: 100%;
       padding: 13px;
-      background: linear-gradient(135deg, var(--accent-neon), #059669);
+      background: linear-gradient(135deg, var(--accent-green-neon), #059669);
       border: none;
       border-radius: 12px;
       color: #022c22;
       font-weight: 800;
       font-size: 0.95rem;
       cursor: pointer;
-      margin-top: 8px;
-      box-shadow: 0 0 16px var(--neon-glow);
+      margin-top: 6px;
+      box-shadow: 0 0 16px var(--green-glow);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
@@ -152,6 +188,57 @@
     .btn-submit:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 20px 0 16px 0;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .divider span {
+      padding: 0 10px;
+    }
+
+    /* Telegram Button */
+    .btn-telegram {
+      width: 100%;
+      padding: 12px;
+      background: rgba(34, 158, 217, 0.12);
+      border: 1px solid rgba(34, 158, 217, 0.4);
+      border-radius: 12px;
+      color: #38bdf8;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-telegram:hover {
+      background: rgba(34, 158, 217, 0.25);
+      border-color: #38bdf8;
+      box-shadow: 0 0 12px rgba(34, 158, 217, 0.2);
+    }
+
+    .btn-telegram svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
     }
 
     .alert-error {
@@ -181,14 +268,36 @@
     <form id="login-form">
       <div class="form-group">
         <label>EMAIL AKUN</label>
-        <input type="email" id="email" class="form-control" required placeholder="nama@domain.com" autocomplete="email">
+        <div class="input-wrapper">
+          <input type="email" id="email" class="form-control" style="padding-right: 15px;" required placeholder="nama@domain.com" autocomplete="email">
+        </div>
       </div>
+
       <div class="form-group">
         <label>PASSWORD</label>
-        <input type="password" id="password" class="form-control" required placeholder="••••••••" autocomplete="current-password">
+        <div class="input-wrapper">
+          <input type="password" id="password" class="form-control" required placeholder="••••••••" autocomplete="current-password">
+          <button type="button" id="toggle-pwd" class="toggle-password" aria-label="Lihat Password">
+            <svg id="eye-icon" viewBox="0 0 24 24">
+              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+            </svg>
+          </button>
+        </div>
       </div>
+
       <button type="submit" id="btn-login" class="btn-submit">LOGIN SEKARANG</button>
     </form>
+
+    <div class="divider">
+      <span>BELUM PUNYA AKUN?</span>
+    </div>
+
+    <a href="https://t.me/yumazoki" target="_blank" class="btn-telegram">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 0C5.37 0 0 5.37 0 12s5.37 12 12 12 12-5.37 12-12S18.63 0 12 0zm5.56 8.16l-1.97 9.28c-.15.67-.54.83-1.1.52l-3.02-2.23-1.46 1.4c-.16.16-.3.3-.61.3l.21-3.08 5.61-5.07c.24-.22-.05-.34-.37-.13l-6.93 4.36-2.98-.93c-.65-.2-.66-.65.14-.96l11.66-4.5c.54-.2 1.01.13.82.84z"/>
+      </svg>
+      Beli Akun via Telegram (@yumazoki)
+    </a>
   </div>
 
   <script type="module">
@@ -198,7 +307,24 @@
     // 💡 MASUKKAN EMAIL ADMIN ANDA DI SINI
     const ADMIN_EMAIL = "yumetrader63@gmail.com";
 
-    // Redireksi otomatis jika session pengguna masih aktif
+    // Toggle Lihat Password
+    const passwordInput = document.getElementById("password");
+    const togglePwdBtn = document.getElementById("toggle-pwd");
+    const eyeIcon = document.getElementById("eye-icon");
+
+    togglePwdBtn.addEventListener("click", () => {
+      const isPassword = passwordInput.type === "password";
+      passwordInput.type = isPassword ? "text" : "password";
+      
+      // Update Ikon SVG (Mata Terbuka / Mata Tertutup)
+      if (isPassword) {
+        eyeIcon.innerHTML = `<path d="M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.44-4.75-1.73-4.39-6-7.5-11-7.5-1.4 0-2.74.25-3.98.7l2.16 2.16C10.74 7.13 11.35 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.17c0-1.66-1.34-3-3-3l-.17.02z"/>`;
+      } else {
+        eyeIcon.innerHTML = `<path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>`;
+      }
+    });
+
+    // Redireksi otomatis jika pengguna sudah login
     onAuthStateChanged(auth, (user) => {
       if (user) {
         if (user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
@@ -209,6 +335,7 @@
       }
     });
 
+    // Form Login Submit
     const loginForm = document.getElementById("login-form");
     const errorMsg = document.getElementById("error-msg");
     const btnLogin = document.getElementById("btn-login");
@@ -227,7 +354,6 @@
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Pengecekan Role Pengguna
         if (user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
           window.location.href = "admin.html";
         } else {
