@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Admin Panel - VIP Signal</title>
+  <title>Admin Panel - VIP Signal (Secure)</title>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   
   <style>
@@ -18,19 +18,8 @@
       --text-muted: #848e9c;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    body {
-      background-color: var(--bg-canvas);
-      color: var(--text-main);
-      min-height: 100vh;
-      padding: 16px;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background-color: var(--bg-canvas); color: var(--text-main); min-height: 100vh; padding: 16px; }
 
     .admin-layout {
       max-width: 1300px;
@@ -40,108 +29,39 @@
       gap: 20px;
     }
 
-    @media (max-width: 992px) {
-      .admin-layout { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 992px) { .admin-layout { grid-template-columns: 1fr; } }
 
-    .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-dark);
-      border-radius: 14px;
-      padding: 18px;
-    }
-
-    .card-title {
-      font-size: 0.95rem;
-      font-weight: 800;
-      color: var(--accent-green);
-      margin-bottom: 14px;
-    }
-
+    .card { background: var(--bg-card); border: 1px solid var(--border-dark); border-radius: 14px; padding: 18px; }
+    .card-title { font-size: 0.95rem; font-weight: 800; color: var(--accent-green); margin-bottom: 14px; }
     .form-group { margin-bottom: 12px; }
 
-    label {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-
+    label { display: block; font-size: 0.72rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; }
     input, select {
-      width: 100%;
-      padding: 12px;
-      background: var(--bg-input);
-      border: 1px solid var(--border-dark);
-      border-radius: 8px;
-      color: var(--text-main);
-      font-weight: 700;
-      font-size: 0.85rem;
+      width: 100%; padding: 12px; background: var(--bg-input);
+      border: 1px solid var(--border-dark); border-radius: 8px; color: var(--text-main); font-weight: 700; font-size: 0.85rem;
     }
+    input:focus, select:focus { outline: none; border-color: var(--accent-green); }
 
-    input:focus, select:focus {
-      outline: none;
-      border-color: var(--accent-green);
-    }
-
-    .btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 800;
-      font-size: 0.85rem;
-      cursor: pointer;
-    }
-
+    .btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: 800; font-size: 0.85rem; cursor: pointer; }
     .btn-green { background: var(--accent-green); color: #000; }
     .btn-red { background: rgba(255, 82, 82, 0.15); color: var(--red-trade); border: 1px solid var(--red-trade); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .table-responsive { width: 100%; overflow-x: auto; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.82rem;
-      white-space: nowrap;
-    }
-
-    th {
-      text-align: left;
-      padding: 10px;
-      background: var(--bg-input);
-      color: var(--text-muted);
-      font-size: 0.7rem;
-      font-weight: 800;
-      border-bottom: 1px solid var(--border-dark);
-    }
-
-    td {
-      padding: 10px;
-      border-bottom: 1px solid var(--border-dark);
-      font-weight: 700;
-    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; white-space: nowrap; }
+    th { text-align: left; padding: 10px; background: var(--bg-input); color: var(--text-muted); font-size: 0.7rem; font-weight: 800; border-bottom: 1px solid var(--border-dark); }
+    td { padding: 10px; border-bottom: 1px solid var(--border-dark); font-weight: 700; }
 
     .dir-up { color: var(--accent-green); }
     .dir-down { color: var(--red-trade); }
-    
-    .schedule-tag {
-      display: inline-block;
-      padding: 4px 8px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border-dark);
-      border-radius: 6px;
-      margin: 2px;
-      font-size: 0.75rem;
-    }
+    .schedule-tag { display: inline-block; padding: 4px 8px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-dark); border-radius: 6px; margin: 2px; font-size: 0.75rem; }
   </style>
 </head>
 <body>
 
   <div class="admin-layout">
     
-    <!-- KIRI: MANAJEMEN USER -->
+    <!-- KIRI: DAFTAR & TAMBAH USER -->
     <div style="display: flex; flex-direction: column; gap: 20px;">
       
       <div class="card">
@@ -184,7 +104,7 @@
       <div class="card">
         <div class="card-title">GENERATE SINYAL 2 MINGGU (ALL TIMEFRAMES)</div>
         <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 14px;">
-          Sistem akan otomatis memproduksi sinyal acak gacor untuk <b>15s, 1m, dan 5m</b> yang berlaku selama <b>14 hari ke depan</b> dalam 1x klik.
+          Sistem akan membuat sinyal acak gacor untuk <b>15s, 1m, dan 5m</b> yang berlaku selama <b>14 hari ke depan</b> secara aman.
         </p>
 
         <form id="form-generate-signals">
@@ -232,39 +152,46 @@
     import { db } from "./firebase-config.js";
     import { collection, doc, setDoc, deleteDoc, onSnapshot, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // 1. MANAJEMEN USER REALTIME
+    // 1. Dapatkan & Tampilkan User dengan Penanganan Error Aman
     const userTbody = document.getElementById("user-list-tbody");
     const formUser = document.getElementById("form-create-user");
 
     onSnapshot(collection(db, "users"), (snapshot) => {
       userTbody.innerHTML = "";
       if (snapshot.empty) {
-        userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--text-muted);">Belum ada user.</td></tr>`;
+        userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--text-muted);">Belum ada user terdaftar.</td></tr>`;
         return;
       }
       snapshot.forEach(docSnap => {
         const u = docSnap.data();
         userTbody.innerHTML += `
           <tr>
-            <td>${u.email}</td>
+            <td>${u.email || 'No Email'}</td>
             <td style="text-align: right;">
               <button class="btn btn-red" style="padding:4px 8px; font-size:0.7rem; width:auto;" onclick="deleteUser('${docSnap.id}')">Hapus</button>
             </td>
           </tr>
         `;
       });
+    }, (error) => {
+      console.error("Firestore User Error:", error);
+      userTbody.innerHTML = `<tr><td colspan="2" style="color:var(--red-trade);">Gagal memuat: Periksa Rules Firestore!</td></tr>`;
     });
 
     window.deleteUser = async (uid) => {
       if (confirm("Hapus user ini dari database?")) {
-        await deleteDoc(doc(db, "users", uid));
+        try {
+          await deleteDoc(doc(db, "users", uid));
+        } catch (err) {
+          alert("Gagal menghapus user: " + err.message);
+        }
       }
     };
 
     formUser.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const email = document.getElementById("new-email").value;
-      const pwd = document.getElementById("new-password").value;
+      const email = document.getElementById("new-email").value.trim();
+      const pwd = document.getElementById("new-password").value.trim();
 
       try {
         const newUserRef = doc(collection(db, "users"));
@@ -276,11 +203,11 @@
         alert("User berhasil ditambahkan!");
         formUser.reset();
       } catch (err) {
-        alert("Error: " + err.message);
+        alert("Error menambahkan user: " + err.message);
       }
     });
 
-    // 2. LOGIKA GENERATE DERET ACAK GACOR UNTUK 2 MINGGU
+    // 2. Generate Sinyal Gacor 2 Minggu (Aman & Ringan)
     function generateTwoWeeksSchedule(tf) {
       const schedule = [];
       const now = new Date();
@@ -288,17 +215,9 @@
       let stepMs = 0;
       let totalItems = 0;
 
-      // Membatasi jumlah entry agar ukuran database tetap efisien namun mencakup 2 minggu
-      if (tf === "15s") {
-        stepMs = 15 * 1000;
-        totalItems = 200; // ~200 jadwal interval 15 detik kedepan
-      } else if (tf === "1m") {
-        stepMs = 60 * 1000;
-        totalItems = 300; // ~300 jadwal menit kedepan
-      } else if (tf === "5m") {
-        stepMs = 5 * 60 * 1000;
-        totalItems = 400; // ~400 jadwal 5-menitan kedepan
-      }
+      if (tf === "15s") { stepMs = 15 * 1000; totalItems = 150; }
+      else if (tf === "1m") { stepMs = 60 * 1000; totalItems = 200; }
+      else if (tf === "5m") { stepMs = 5 * 60 * 1000; totalItems = 250; }
 
       let consecutiveCount = 0;
       let lastDir = "";
@@ -312,7 +231,6 @@
         
         let timeStr = tf === "15s" ? `${hours}:${mins}:${secs}` : `${hours}:${mins}`;
 
-        // Randomizing arah BUY/SELL gacor (mencegah streak 3x beruntun)
         let direction = Math.random() > 0.5 ? "UP" : "DOWN";
         if (direction === lastDir) {
           consecutiveCount++;
@@ -334,31 +252,30 @@
       return schedule;
     }
 
-    // 3. GENERATE KESELURUHAN TIMEFRAME UNTUK 1 PAIR DALAM 1 KLIK
+    // 3. Publish Sinyal
     const formSignal = document.getElementById("form-generate-signals");
     const btnPublish = document.getElementById("btn-publish");
 
     formSignal.addEventListener("submit", async (e) => {
       e.preventDefault();
       btnPublish.disabled = true;
-      btnPublish.innerText = "GENERATING SINYAL 2 MINGGU...";
+      btnPublish.innerText = "PROSES GENERATE...";
 
       const pair = document.getElementById("signal-pair").value;
       const allTimeframes = ["15s", "1m", "5m"];
       
-      // Timestamp Kedaluwarsa (2 Minggu dari sekarang)
       const nowMs = new Date().getTime();
       const twoWeeksMs = nowMs + (14 * 24 * 60 * 60 * 1000);
 
       try {
-        // Hapus semua sinyal master lama untuk pair yang dipilih
+        // Hapus sinyal lama untuk pair ini
         const q = query(collection(db, "admin_master_signals"), where("pair", "==", pair));
         const oldDocs = await getDocs(q);
         const deletes = [];
         oldDocs.forEach(d => deletes.push(deleteDoc(doc(db, "admin_master_signals", d.id))));
         await Promise.all(deletes);
 
-        // Generate sinyal 2 minggu untuk ketiga timeframe sekaligus
+        // Simpan sinyal baru
         const savePromises = allTimeframes.map(tf => {
           const schedule = generateTwoWeeksSchedule(tf);
           const newRef = doc(collection(db, "admin_master_signals"));
@@ -372,16 +289,17 @@
         });
 
         await Promise.all(savePromises);
-        alert(`Berhasil! Sinyal ${pair} untuk semua timeframe (15s, 1m, 5m) aktif selama 2 minggu.`);
+        alert(`Berhasil! Sinyal ${pair} (15s, 1m, 5m) aktif 2 minggu.`);
       } catch (err) {
-        alert("Gagal mempublikasikan: " + err.message);
+        console.error("Signal Generation Error:", err);
+        alert("Gagal menyimpan sinyal: " + err.message);
       } finally {
         btnPublish.disabled = false;
         btnPublish.innerText = "GENERATE ALL TIMEFRAME (2 MINGGU)";
       }
     });
 
-    // 4. BACA SINYAL MASTER AKTIF DI DATABASE REALTIME
+    // 4. Realtime Monitor Sinyal Master
     onSnapshot(collection(db, "admin_master_signals"), (snapshot) => {
       const tbody = document.getElementById("signal-master-tbody");
       tbody.innerHTML = "";
@@ -393,7 +311,6 @@
         const d = docSnap.data();
         let sampleHtml = "";
 
-        // Menampilkan 3 item sampel pertama saja agar tabel tetap rapi
         if (d.schedule && Array.isArray(d.schedule)) {
           const samples = d.schedule.slice(0, 3);
           samples.forEach(item => {
@@ -414,6 +331,8 @@
           </tr>
         `;
       });
+    }, (error) => {
+      console.error("Firestore Signal Error:", error);
     });
   </script>
 </body>
