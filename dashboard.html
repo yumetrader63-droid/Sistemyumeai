@@ -8,7 +8,7 @@
   
   <style>
     :root {
-      /* Palette Warna Dark Solid Ala Trading Platform */
+      /* Palette Warna Dark Solid Trading Platform */
       --bg-canvas: #0b0e11;
       --bg-card: #151a21;
       --bg-input: #1e242d;
@@ -90,7 +90,7 @@
       gap: 8px;
     }
 
-    /* Animasi pulse pada status indicator */
+    /* Animasi pulse status indicator */
     .status-dot {
       width: 8px;
       height: 8px;
@@ -128,7 +128,7 @@
       transform: scale(0.95);
     }
 
-    /* 1. Live Server Clock (Atas Email) */
+    /* 1. Live Server Clock */
     .clock-card {
       text-align: center;
       padding: 18px 16px;
@@ -151,7 +151,7 @@
       text-shadow: 0 0 10px var(--green-glow);
     }
 
-    /* 2. User Email Box (Di bawah Waktu) */
+    /* 2. User Email Box */
     .user-card {
       display: flex;
       justify-content: space-between;
@@ -200,7 +200,7 @@
       fill: currentColor;
     }
 
-    /* 3. Trading Control Panel Card */
+    /* 3. Control Panel Trading Card */
     .panel-card {
       display: flex;
       flex-direction: column;
@@ -266,7 +266,7 @@
       box-shadow: 0 0 12px var(--green-glow);
     }
 
-    /* Tombol Generate Signal dengan Efek Hover & Loading Pulse */
+    /* Tombol Generate Signal */
     .btn-execute {
       width: 100%;
       padding: 14px;
@@ -279,8 +279,6 @@
       cursor: pointer;
       letter-spacing: 0.5px;
       transition: all 0.2s ease;
-      position: relative;
-      overflow: hidden;
     }
 
     .btn-execute:hover {
@@ -306,10 +304,9 @@
       100% { opacity: 0.6; }
     }
 
-    /* Signal Result Box dengan Animasi Popup */
+    /* Styling Kotak Sinyal Standard (Sinyal 1 & Sinyal 2) */
     .signal-box {
       margin-top: 4px;
-      display: none;
       background: var(--bg-input);
       border: 1px solid var(--border-dark);
       border-radius: 8px;
@@ -386,6 +383,42 @@
     .grid-item b {
       font-size: 0.85rem;
     }
+
+    /* Placeholder Sinyal Kosong (Tanda Tanya Besar) */
+    .empty-signal-box {
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-input);
+      border: 1px dashed var(--border-dark);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .question-mark {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--accent-green);
+      text-shadow: 0 0 16px var(--green-glow);
+      line-height: 1;
+      animation: questionFloat 2s ease-in-out infinite;
+    }
+
+    @keyframes questionFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .empty-text {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      letter-spacing: 0.8px;
+    }
   </style>
 </head>
 <body>
@@ -401,13 +434,13 @@
       <button id="btn-logout" class="btn-logout">OUT</button>
     </div>
 
-    <!-- 1. Live Server Clock (Jam, Menit, Detik) -->
+    <!-- 1. Live Server Clock -->
     <div class="card-base clock-card">
       <div class="clock-label">SERVER TIME</div>
       <div id="live-clock" class="clock-time">00:00:00</div>
     </div>
 
-    <!-- 2. Kotak Email User (Tepat di Bawah Waktu) -->
+    <!-- 2. Kotak Email User -->
     <div class="card-base user-card">
       <span class="user-label">ACCOUNT</span>
       <div class="email-wrapper">
@@ -445,28 +478,61 @@
 
       <button id="btn-generate" class="btn-execute">GENERATE SIGNAL</button>
 
-      <!-- 4. Terminal Signal Output Result -->
-      <div id="signal-box" class="signal-box">
+      <!-- 4. Kotak Signal Utama 1 (Hasil Analysis) -->
+      <div id="signal-box-1" class="signal-box" style="display: none;">
         <div class="signal-header">
-          <span id="res-pair" class="signal-pair">BTC/USDT</span>
-          <span id="res-type" class="signal-type type-buy">BUY</span>
+          <span id="res-pair-1" class="signal-pair">BTC/USDT</span>
+          <span id="res-type-1" class="signal-type type-buy">BUY</span>
         </div>
         <div class="signal-grid">
           <div class="grid-item">
             <span>ENTRY AREA</span>
-            <b id="res-entry">-</b>
+            <b id="res-entry-1">-</b>
           </div>
           <div class="grid-item">
             <span>TARGET TP</span>
-            <b id="res-tp" style="color: var(--accent-green);">-</b>
+            <b id="res-tp-1" style="color: var(--accent-green);">-</b>
           </div>
           <div class="grid-item">
             <span>STOP LOSS</span>
-            <b id="res-sl" style="color: var(--red-trade);">-</b>
+            <b id="res-sl-1" style="color: var(--red-trade);">-</b>
           </div>
           <div class="grid-item">
             <span>TIMEFRAME</span>
-            <b id="res-tf">-</b>
+            <b id="res-tf-1">-</b>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Kotak Signal 2 (Secondary/Placeholder Tanda Tanya) -->
+      <!-- Tampilan Default Jika Belum Ada Sinyal 2 -->
+      <div id="empty-signal-2" class="empty-signal-box">
+        <div class="question-mark">?</div>
+        <div class="empty-text">SECONDARY SIGNAL EMPTY</div>
+      </div>
+
+      <!-- Tampilan Jika Sinyal 2 Ada -->
+      <div id="signal-box-2" class="signal-box" style="display: none;">
+        <div class="signal-header">
+          <span id="res-pair-2" class="signal-pair">BTC/USDT</span>
+          <span id="res-type-2" class="signal-type type-buy">BUY</span>
+        </div>
+        <div class="signal-grid">
+          <div class="grid-item">
+            <span>ENTRY AREA</span>
+            <b id="res-entry-2">-</b>
+          </div>
+          <div class="grid-item">
+            <span>TARGET TP</span>
+            <b id="res-tp-2" style="color: var(--accent-green);">-</b>
+          </div>
+          <div class="grid-item">
+            <span>STOP LOSS</span>
+            <b id="res-sl-2" style="color: var(--red-trade);">-</b>
+          </div>
+          <div class="grid-item">
+            <span>TIMEFRAME</span>
+            <b id="res-tf-2">-</b>
           </div>
         </div>
       </div>
@@ -512,7 +578,7 @@
       updateEmailDisplay();
     });
 
-    // 3. Realtime Server Clock (Jam, Menit, Detik)
+    // 3. Realtime Server Clock
     function updateClock() {
       const now = new Date();
       const h = String(now.getHours()).padStart(2, '0');
@@ -523,7 +589,7 @@
     setInterval(updateClock, 1000);
     updateClock();
 
-    // 4. Timeframe Selector Interactivity
+    // 4. Timeframe Selector
     const tfButtons = document.querySelectorAll(".tf-btn");
     tfButtons.forEach(btn => {
       btn.addEventListener("click", () => {
@@ -535,7 +601,9 @@
 
     // 5. Query Signal Realtime dari Database Firebase
     const btnGenerate = document.getElementById("btn-generate");
-    const signalBox = document.getElementById("signal-box");
+    const signalBox1 = document.getElementById("signal-box-1");
+    const signalBox2 = document.getElementById("signal-box-2");
+    const emptySignal2 = document.getElementById("empty-signal-2");
 
     btnGenerate.addEventListener("click", async () => {
       const selectedPair = document.getElementById("pair-select").value;
@@ -544,39 +612,62 @@
       btnGenerate.disabled = true;
 
       try {
+        // Mengambil hingga 2 sinyal terbaru
         const q = query(
           collection(db, "signals"),
           where("pair", "==", selectedPair),
           orderBy("createdAt", "desc"),
-          limit(1)
+          limit(2)
         );
 
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          const signalData = querySnapshot.docs[0].data();
-          
-          document.getElementById("res-pair").innerText = signalData.pair;
-          
-          const resType = document.getElementById("res-type");
-          const isBuy = signalData.type.toUpperCase().includes("BUY");
-          resType.innerText = isBuy ? "BUY / UP" : "SELL / DOWN";
-          resType.className = `signal-type ${isBuy ? "type-buy" : "type-sell"}`;
+          const docs = querySnapshot.docs;
 
-          document.getElementById("res-entry").innerText = signalData.entry;
-          document.getElementById("res-tp").innerText = signalData.tp;
-          document.getElementById("res-sl").innerText = signalData.sl;
-          document.getElementById("res-tf").innerText = selectedTimeframe.toUpperCase();
+          // Process Signal 1
+          const data1 = docs[0].data();
+          document.getElementById("res-pair-1").innerText = data1.pair;
+          const isBuy1 = data1.type.toUpperCase().includes("BUY");
+          const resType1 = document.getElementById("res-type-1");
+          resType1.innerText = isBuy1 ? "BUY / UP" : "SELL / DOWN";
+          resType1.className = `signal-type ${isBuy1 ? "type-buy" : "type-sell"}`;
 
-          // Tampilkan dengan re-trigger animasi pop-up
-          signalBox.style.display = "none";
-          setTimeout(() => {
-            signalBox.style.display = "block";
-          }, 50);
+          document.getElementById("res-entry-1").innerText = data1.entry;
+          document.getElementById("res-tp-1").innerText = data1.tp;
+          document.getElementById("res-sl-1").innerText = data1.sl;
+          document.getElementById("res-tf-1").innerText = selectedTimeframe.toUpperCase();
+
+          signalBox1.style.display = "none";
+          setTimeout(() => { signalBox1.style.display = "block"; }, 50);
+
+          // Process Signal 2 jika ada
+          if (docs.length > 1) {
+            const data2 = docs[1].data();
+            document.getElementById("res-pair-2").innerText = data2.pair;
+            const isBuy2 = data2.type.toUpperCase().includes("BUY");
+            const resType2 = document.getElementById("res-type-2");
+            resType2.innerText = isBuy2 ? "BUY / UP" : "SELL / DOWN";
+            resType2.className = `signal-type ${isBuy2 ? "type-buy" : "type-sell"}`;
+
+            document.getElementById("res-entry-2").innerText = data2.entry;
+            document.getElementById("res-tp-2").innerText = data2.tp;
+            document.getElementById("res-sl-2").innerText = data2.sl;
+            document.getElementById("res-tf-2").innerText = selectedTimeframe.toUpperCase();
+
+            emptySignal2.style.display = "none";
+            signalBox2.style.display = "block";
+          } else {
+            // Jika sinyal ke-2 tidak ada, tampilkan kotak tanda tanya
+            signalBox2.style.display = "none";
+            emptySignal2.style.display = "flex";
+          }
 
         } else {
-          alert(`Sinyal untuk pair ${selectedPair} belum diinput oleh Admin.`);
-          signalBox.style.display = "none";
+          alert(`Sinyal untuk pair ${selectedPair} belum diinput.`);
+          signalBox1.style.display = "none";
+          signalBox2.style.display = "none";
+          emptySignal2.style.display = "flex";
         }
       } catch (err) {
         alert("Gagal mengambil data sinyal: " + err.message);
