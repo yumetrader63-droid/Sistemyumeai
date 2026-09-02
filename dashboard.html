@@ -2,678 +2,160 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Yume Algorit VIP - Trading Terminal</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Master Signal Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-canvas: #0b0e11;
       --bg-card: #151a21;
       --bg-input: #1e242d;
-      
       --accent-green: #00e676;
-      --accent-green-hover: #00c853;
-      --green-glow: rgba(0, 230, 118, 0.25);
       --red-trade: #ff5252;
-      
       --border-dark: #262c36;
       --text-main: #ffffff;
       --text-muted: #848e9c;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      background-color: var(--bg-canvas);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      padding: 14px;
-      overflow-x: hidden;
-    }
-
-    .terminal-container {
-      width: 100%;
-      max-width: 440px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    /* Base Card Style */
-    .card-base {
-      background: var(--bg-card);
-      border: 1px solid var(--border-dark);
-      border-radius: 12px;
-      padding: 14px 16px;
-    }
-
-    /* Header Bar */
-    .header-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .brand-title {
-      font-size: 0.9rem;
-      font-weight: 800;
-      color: var(--accent-green);
-      letter-spacing: 0.5px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      background: var(--accent-green);
-      border-radius: 50%;
-      box-shadow: 0 0 8px var(--accent-green);
-      animation: statusPulse 1.8s infinite;
-    }
-
-    @keyframes statusPulse {
-      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); }
-      70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(0, 230, 118, 0); }
-      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
-    }
-
-    .btn-logout {
-      background: rgba(255, 82, 82, 0.1);
-      border: 1px solid rgba(255, 82, 82, 0.3);
-      color: var(--red-trade);
-      padding: 6px 14px;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      font-weight: 800;
-      cursor: pointer;
-    }
-
-    /* Server Clock */
-    .clock-card {
-      text-align: center;
-      padding: 16px;
-    }
-
-    .clock-label {
-      font-size: 0.68rem;
-      font-weight: 800;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-
-    .clock-time {
-      font-size: 2rem;
-      font-weight: 800;
-      color: var(--accent-green);
-      font-family: monospace;
-      text-shadow: 0 0 10px var(--green-glow);
-    }
-
-    /* Account Box */
-    .user-card {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--bg-input);
-    }
-
-    .user-label {
-      font-size: 0.68rem;
-      font-weight: 700;
-      color: var(--text-muted);
-    }
-
-    .email-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .user-email {
-      font-size: 0.85rem;
-      font-weight: 700;
-      font-family: monospace;
-    }
-
-    .btn-icon {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-    }
-
-    .btn-icon svg { width: 16px; height: 16px; fill: currentColor; }
-
-    /* Control Panel Card */
-    .panel-card {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .panel-label {
-      display: block;
-      font-size: 0.7rem;
-      font-weight: 800;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-
-    .asset-selector-trigger {
-      width: 100%;
-      padding: 12px 14px;
-      background: var(--bg-input);
-      border: 1px solid var(--border-dark);
-      border-radius: 8px;
-      color: var(--text-main);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .tf-selector {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .tf-btn {
-      padding: 10px;
-      background: var(--bg-input);
-      border: 1px solid var(--border-dark);
-      border-radius: 8px;
-      color: var(--text-muted);
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      text-align: center;
-    }
-
-    .tf-btn.active {
-      background: var(--accent-green);
-      border-color: var(--accent-green);
-      color: #000000;
-      font-weight: 800;
-      box-shadow: 0 0 12px var(--green-glow);
-    }
-
-    .btn-execute {
-      width: 100%;
-      padding: 14px;
-      background: var(--accent-green);
-      border: none;
-      border-radius: 8px;
-      color: #000000;
-      font-weight: 800;
-      font-size: 0.95rem;
-      cursor: pointer;
-    }
-
-    .btn-execute:disabled {
-      background: var(--bg-input);
-      color: var(--text-muted);
-      cursor: not-allowed;
-    }
-
-    /* KOTAK SIGNAL TUNGGAL */
-    .signal-single-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-dark);
-      border-radius: 12px;
-      padding: 16px;
-      min-height: 150px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .empty-signal-state {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 10px 0;
-    }
-
-    .question-mark {
-      font-size: 3.2rem;
-      font-weight: 800;
-      color: var(--accent-green);
-      text-shadow: 0 0 16px var(--green-glow);
-      line-height: 1;
-      animation: questionPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes questionPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-
-    .empty-text {
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      letter-spacing: 0.5px;
-    }
-
-    .signal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border-dark);
-      margin-bottom: 10px;
-    }
-
-    .signal-pair { font-size: 0.95rem; font-weight: 800; }
-
-    .signal-type {
-      font-size: 0.8rem;
-      font-weight: 800;
-      padding: 4px 10px;
-      border-radius: 4px;
-    }
-
-    .type-buy { background: var(--accent-green); color: #000000; }
-    .type-sell { background: var(--red-trade); color: #ffffff; }
-
-    .signal-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .grid-item {
-      background: var(--bg-input);
-      padding: 8px 10px;
-      border-radius: 6px;
-      border: 1px solid var(--border-dark);
-    }
-
-    .grid-item span {
-      display: block;
-      font-size: 0.65rem;
-      color: var(--text-muted);
-      font-weight: 700;
-    }
-
-    .grid-item b { font-size: 0.85rem; }
-
-    /* MODAL POPUP SELECT ASSET */
-    .modal-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(8px);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-      padding: 16px;
-    }
-
-    .modal-content {
-      width: 100%;
-      max-width: 400px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-dark);
-      border-radius: 16px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .modal-title { font-size: 0.9rem; font-weight: 800; color: var(--accent-green); }
-
-    .btn-close-modal {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 1.2rem;
-      cursor: pointer;
-    }
-
-    .asset-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .asset-item {
-      padding: 12px;
-      background: var(--bg-input);
-      border: 1px solid var(--border-dark);
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
-    }
-
-    .asset-item:hover {
-      border-color: var(--accent-green);
-    }
-
-    .asset-name { font-weight: 800; font-size: 0.88rem; }
-    .asset-badge {
-      font-size: 0.65rem;
-      padding: 2px 6px;
-      background: rgba(0, 230, 118, 0.15);
-      color: var(--accent-green);
-      border-radius: 4px;
-      font-weight: 700;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { background-color: var(--bg-canvas); color: var(--text-main); display: flex; justify-content: center; padding: 20px; }
+    .admin-container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
+    .card { background: var(--bg-card); border: 1px solid var(--border-dark); border-radius: 12px; padding: 20px; }
+    h2 { font-size: 1.1rem; color: var(--accent-green); margin-bottom: 16px; font-weight: 800; }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; }
+    select, input { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-dark); border-radius: 8px; color: var(--text-main); font-weight: 700; }
+    .btn-submit { width: 100%; padding: 14px; background: var(--accent-green); border: none; border-radius: 8px; font-weight: 800; cursor: pointer; color: #000; margin-top: 10px; }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .signal-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .signal-item { background: var(--bg-input); border: 1px solid var(--border-dark); padding: 10px; border-radius: 6px; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; }
   </style>
 </head>
 <body>
 
-  <div class="terminal-container">
-    
-    <div class="card-base header-bar">
-      <div class="brand-title">
-        <div class="status-dot"></div>
-        YUME ALGORIT
-      </div>
-      <button id="btn-logout" class="btn-logout">OUT</button>
+  <div class="admin-container">
+    <div class="card">
+      <h2>ADMIN MASTER SIGNAL GENERATOR</h2>
+      <form id="admin-signal-form">
+        <div class="form-group">
+          <label>SELECT PAIR</label>
+          <select id="admin-pair">
+            <option value="BTC/USDT">BTC/USDT</option>
+            <option value="ETH/USDT">ETH/USDT</option>
+            <option value="SOL/USDT">SOL/USDT</option>
+            <option value="EUR/USD">EUR/USD</option>
+            <option value="GBP/USD">GBP/USD</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>SIGNAL DIRECTION</label>
+          <select id="admin-type">
+            <option value="BUY">BUY / UP</option>
+            <option value="SELL">SELL / DOWN</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>ENTRY PRICE</label>
+          <input type="text" id="admin-entry" placeholder="Contoh: 65200.50" required>
+        </div>
+
+        <div class="form-group">
+          <label>TARGET TAKE PROFIT (TP)</label>
+          <input type="text" id="admin-tp" placeholder="Contoh: 65800.00" required>
+        </div>
+
+        <div class="form-group">
+          <label>STOP LOSS (SL)</label>
+          <input type="text" id="admin-sl" placeholder="Contoh: 64900.00" required>
+        </div>
+
+        <button type="submit" id="btn-save-signal" class="btn-submit">PUBLISH SIGNAL (REPLACE OLD)</button>
+      </form>
     </div>
 
-    <div class="card-base clock-card">
-      <div class="clock-label">SERVER TIME</div>
-      <div id="live-clock" class="clock-time">00:00:00</div>
-    </div>
-
-    <div class="card-base user-card">
-      <span class="user-label">ACCOUNT</span>
-      <div class="email-wrapper">
-        <span id="user-email-text" class="user-email">loading...</span>
-        <button id="toggle-email" class="btn-icon" type="button">
-          <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-        </button>
-      </div>
-    </div>
-
-    <div class="card-base panel-card">
-      <div>
-        <span class="panel-label">SELECT ASSET</span>
-        <div id="open-asset-modal" class="asset-selector-trigger">
-          <span id="current-asset-text" style="font-weight: 800;">BTC/USDT</span>
-          <span style="color: var(--accent-green); font-size: 0.8rem; font-weight: 700;">CHANGE ▼</span>
-        </div>
-      </div>
-
-      <div>
-        <span class="panel-label">TIMEFRAME</span>
-        <div class="tf-selector">
-          <button type="button" class="tf-btn active" data-tf="15s">15 DETIK</button>
-          <button type="button" class="tf-btn" data-tf="1m">1 MENIT</button>
-          <button type="button" class="tf-btn" data-tf="5m">5 MENIT</button>
-        </div>
-      </div>
-
-      <button id="btn-generate" type="button" class="btn-execute">GENERATE SIGNAL</button>
-    </div>
-
-    <div class="signal-single-card">
-      
-      <div id="empty-signal-state" class="empty-signal-state">
-        <div class="question-mark">?</div>
-        <div class="empty-text">NO SIGNAL GENERATED YET</div>
-      </div>
-
-      <div id="active-signal-state" style="display: none;">
-        <div class="signal-header">
-          <span id="res-pair" class="signal-pair">BTC/USDT</span>
-          <span id="res-type" class="signal-type type-buy">BUY</span>
-        </div>
-        <div class="signal-grid">
-          <div class="grid-item"><span>ENTRY AREA</span><b id="res-entry">-</b></div>
-          <div class="grid-item"><span>TARGET TP</span><b id="res-tp" style="color: var(--accent-green);">-</b></div>
-          <div class="grid-item"><span>STOP LOSS</span><b id="res-sl" style="color: var(--red-trade);">-</b></div>
-          <div class="grid-item"><span>VALID UNTIL</span><b id="res-valid" style="color: var(--accent-green);">-</b></div>
-        </div>
-      </div>
-
-    </div>
-
-  </div>
-
-  <div id="asset-modal" class="modal-overlay">
-    <div class="modal-content">
-      <div class="modal-header">
-        <span class="modal-title">SELECT ASSET</span>
-        <button id="close-asset-modal" class="btn-close-modal" type="button">✕</button>
-      </div>
-
-      <div class="asset-list">
-        <div class="asset-item" data-pair="BTC/USDT">
-          <span class="asset-name">BTC / USDT</span>
-          <span class="asset-badge">CRYPTO</span>
-        </div>
-        <div class="asset-item" data-pair="ETH/USDT">
-          <span class="asset-name">ETH / USDT</span>
-          <span class="asset-badge">CRYPTO</span>
-        </div>
-        <div class="asset-item" data-pair="SOL/USDT">
-          <span class="asset-name">SOL / USDT</span>
-          <span class="asset-badge">CRYPTO</span>
-        </div>
-        <div class="asset-item" data-pair="EUR/USD">
-          <span class="asset-name">EUR / USD</span>
-          <span class="asset-badge">FOREX</span>
-        </div>
-        <div class="asset-item" data-pair="GBP/USD">
-          <span class="asset-name">GBP / USD</span>
-          <span class="asset-badge">FOREX</span>
-        </div>
+    <div class="card">
+      <h2>ACTIVE ADMIN SIGNALS (2 WEEKS VALID)</h2>
+      <div id="active-signals-list" class="signal-list">
+        <span style="color: var(--text-muted); font-size: 0.8rem;">Loading...</span>
       </div>
     </div>
   </div>
 
   <script type="module">
-    import { auth, db } from "./firebase-config.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { collection, query, where, orderBy, limit, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { db } from "./firebase-config.js";
+    import { collection, query, where, getDocs, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    let rawEmail = "";
-    let isEmailHidden = false;
-    let selectedPair = "BTC/USDT";
-    let selectedTimeframe = "15s";
+    const form = document.getElementById("admin-signal-form");
+    const btnSave = document.getElementById("btn-save-signal");
 
-    // 1. Realtime Server Clock
-    function startClock() {
-      const clockEl = document.getElementById("live-clock");
-      function update() {
-        const now = new Date();
-        const h = String(now.getHours()).padStart(2, '0');
-        const m = String(now.getMinutes()).padStart(2, '0');
-        const s = String(now.getSeconds()).padStart(2, '0');
-        if (clockEl) clockEl.innerText = `${h}:${m}:${s}`;
+    // Load Live Active Admin Signals
+    onSnapshot(collection(db, "admin_master_signals"), (snapshot) => {
+      const container = document.getElementById("active-signals-list");
+      container.innerHTML = "";
+      if (snapshot.empty) {
+        container.innerHTML = `<span style="color: var(--text-muted); font-size: 0.8rem;">Belum ada sinyal aktif.</span>`;
+        return;
       }
-      update();
-      setInterval(update, 1000);
-    }
-    startClock();
-
-    // 2. Auth State & Email Display
-    const emailText = document.getElementById("user-email-text");
-    const toggleEmailBtn = document.getElementById("toggle-email");
-
-    function updateEmailDisplay() {
-      if (!rawEmail) return;
-      if (isEmailHidden) {
-        const parts = rawEmail.split("@");
-        emailText.innerText = parts[0].substring(0, 2) + "***@" + (parts[1] || "");
-      } else {
-        emailText.innerText = rawEmail;
-      }
-    }
-
-    onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = "index.html";
-      } else {
-        rawEmail = user.email || "user@app.com";
-        updateEmailDisplay();
-      }
-    });
-
-    if (toggleEmailBtn) {
-      toggleEmailBtn.addEventListener("click", () => {
-        isEmailHidden = !isEmailHidden;
-        updateEmailDisplay();
-      });
-    }
-
-    // 3. Popup Asset Modal
-    const assetModal = document.getElementById("asset-modal");
-    const openModalBtn = document.getElementById("open-asset-modal");
-    const closeModalBtn = document.getElementById("close-asset-modal");
-    const currentAssetText = document.getElementById("current-asset-text");
-
-    if (openModalBtn && assetModal) openModalBtn.addEventListener("click", () => assetModal.style.display = "flex");
-    if (closeModalBtn && assetModal) closeModalBtn.addEventListener("click", () => assetModal.style.display = "none");
-
-    document.querySelectorAll(".asset-item").forEach(item => {
-      item.addEventListener("click", () => {
-        selectedPair = item.getAttribute("data-pair");
-        currentAssetText.innerText = selectedPair;
-        assetModal.style.display = "none";
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const expDate = new Date(data.adminExpiryMs).toLocaleDateString("id-ID");
+        container.innerHTML += `
+          <div class="signal-item">
+            <div>
+              <b>${data.pair}</b> - <span style="color:${data.type === 'BUY' ? 'var(--accent-green)' : 'var(--red-trade)'}">${data.type}</span><br>
+              <small style="color:var(--text-muted)">Entry: ${data.entry} | TP: ${data.tp} | SL: ${data.sl}</small>
+            </div>
+            <small style="color:var(--text-muted)">Exp: ${expDate}</small>
+          </div>
+        `;
       });
     });
 
-    // 4. Timeframe Selector
-    const tfButtons = document.querySelectorAll(".tf-btn");
-    tfButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        tfButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-        selectedTimeframe = btn.getAttribute("data-tf");
-      });
-    });
+    // Handle Publish Signal (Hapus Lama -> Simpan Baru)
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      btnSave.disabled = true;
+      btnSave.innerText = "PROCESSING...";
 
-    // Helper: Hitung Durasi Jam Berdasarkan Timeframe
-    function getDurationHours(tf) {
-      if (tf === "15s") return 2; // 15 detik -> 2 jam
-      if (tf === "1m") return 4;  // 1 menit -> 4 jam
-      if (tf === "5m") return 8;  // 5 menit -> 8 jam
-      return 2;
-    }
-
-    // Helper: Algoritma Generator Harga Sinyal
-    function generateNewSignalData(pair, tf) {
-      const isBuy = Math.random() > 0.5;
-      const basePrice = pair.includes("BTC") ? 65000 : pair.includes("ETH") ? 3500 : pair.includes("SOL") ? 140 : 1.0850;
-      const variance = basePrice * 0.002;
-      
-      const entry = (basePrice + (Math.random() - 0.5) * variance).toFixed(pair.includes("USD") && !pair.includes("USDT") ? 4 : 2);
-      const tp = isBuy ? (parseFloat(entry) * 1.005).toFixed(pair.includes("USD") && !pair.includes("USDT") ? 4 : 2) : (parseFloat(entry) * 0.995).toFixed(pair.includes("USD") && !pair.includes("USDT") ? 4 : 2);
-      const sl = isBuy ? (parseFloat(entry) * 0.997).toFixed(pair.includes("USD") && !pair.includes("USDT") ? 4 : 2) : (parseFloat(entry) * 1.003).toFixed(pair.includes("USD") && !pair.includes("USDT") ? 4 : 2);
-
-      const now = new Date();
-      const validUntil = new Date(now.getTime() + getDurationHours(tf) * 60 * 60 * 1000);
-
-      return {
-        pair: pair,
-        timeframe: tf,
-        type: isBuy ? "BUY" : "SELL",
-        entry: entry,
-        tp: tp,
-        sl: sl,
-        validUntilMs: validUntil.getTime()
-      };
-    }
-
-    // Render Data ke Tampilan UI Sinyal
-    function renderSignalToUI(data) {
-      document.getElementById("res-pair").innerText = `${data.pair} (${data.timeframe})`;
-      const isBuy = data.type.toUpperCase().includes("BUY");
-      const resType = document.getElementById("res-type");
-      resType.innerText = isBuy ? "BUY / UP" : "SELL / DOWN";
-      resType.className = `signal-type ${isBuy ? "type-buy" : "type-sell"}`;
-
-      document.getElementById("res-entry").innerText = data.entry;
-      document.getElementById("res-tp").innerText = data.tp;
-      document.getElementById("res-sl").innerText = data.sl;
-      
-      const validDate = new Date(data.validUntilMs);
-      const h = String(validDate.getHours()).padStart(2, '0');
-      const m = String(validDate.getMinutes()).padStart(2, '0');
-      document.getElementById("res-valid").innerText = `${h}:${m} WIB`;
-
-      document.getElementById("empty-signal-state").style.display = "none";
-      document.getElementById("active-signal-state").style.display = "block";
-    }
-
-    // 5. Generate & Synchronize Signal Logic
-    const btnGenerate = document.getElementById("btn-generate");
-
-    btnGenerate.addEventListener("click", async () => {
-      btnGenerate.innerText = "ANALYZING MARKET...";
-      btnGenerate.disabled = true;
+      const pair = document.getElementById("admin-pair").value;
+      const type = document.getElementById("admin-type").value;
+      const entry = document.getElementById("admin-entry").value;
+      const tp = document.getElementById("admin-tp").value;
+      const sl = document.getElementById("admin-sl").value;
 
       try {
-        const nowMs = new Date().getTime();
+        // 1. Cari & Hapus Sinyal Lama untuk Pair yang Sama
+        const q = query(collection(db, "admin_master_signals"), where("pair", "==", pair));
+        const oldDocs = await getDocs(q);
+        const deletePromises = [];
+        oldDocs.forEach(d => deletePromises.push(deleteDoc(doc(db, "admin_master_signals", d.id))));
+        await Promise.all(deletePromises);
 
-        // Cari sinyal aktif dari database
-        const q = query(
-          collection(db, "signals"),
-          where("pair", "==", selectedPair),
-          where("timeframe", "==", selectedTimeframe),
-          where("validUntilMs", ">", nowMs),
-          orderBy("validUntilMs", "desc"),
-          limit(1)
-        );
+        // 2. Set Expired 2 Minggu (14 Hari)
+        const now = new Date();
+        const twoWeeksMs = now.getTime() + (14 * 24 * 60 * 60 * 1000);
 
-        const querySnapshot = await getDocs(q);
+        // 3. Simpan Sinyal Master Baru
+        const docRef = doc(collection(db, "admin_master_signals"));
+        await setDoc(docRef, {
+          pair: pair,
+          type: type,
+          entry: entry,
+          tp: tp,
+          sl: sl,
+          adminExpiryMs: twoWeeksMs,
+          createdAt: serverTimestamp()
+        });
 
-        if (!querySnapshot.empty) {
-          // 1. Sinyal aktif sudah ada -> Pakai sinyal dari database (Semua user sama)
-          const existingData = querySnapshot.docs[0].data();
-          renderSignalToUI(existingData);
-        } else {
-          // 2. Belum ada sinyal aktif -> Generate baru lalu simpan ke database
-          const newSignal = generateNewSignalData(selectedPair, selectedTimeframe);
-          
-          await addDoc(collection(db, "signals"), {
-            ...newSignal,
-            createdAt: serverTimestamp()
-          });
-
-          renderSignalToUI(newSignal);
-        }
+        alert(`Sinyal ${pair} berhasil dipublikasikan & menggantikan sinyal lama!`);
+        form.reset();
       } catch (err) {
-        alert("Terjadi kesalahan: " + err.message);
+        alert("Gagal menyimpan sinyal: " + err.message);
       } finally {
-        btnGenerate.innerText = "GENERATE SIGNAL";
-        btnGenerate.disabled = false;
+        btnSave.disabled = false;
+        btnSave.innerText = "PUBLISH SIGNAL (REPLACE OLD)";
       }
-    });
-
-    // 6. Logout Logic
-    document.getElementById("btn-logout").addEventListener("click", () => {
-      signOut(auth).then(() => window.location.href = "index.html");
     });
   </script>
 </body>
