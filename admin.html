@@ -1,112 +1,161 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yume Trading - Admin Panel</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <title>Admin Panel - Master Signal Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-dark: #050b08; --card-bg: rgba(12, 24, 18, 0.85); --card-border: rgba(16, 185, 129, 0.25);
-      --accent-neon: #00ff87; --text-main: #f0fdf4; --text-muted: #9ca3af; --red-accent: #ff4d4d;
+      --bg-canvas: #0b0e11;
+      --bg-card: #151a21;
+      --bg-input: #1e242d;
+      --accent-green: #00e676;
+      --red-trade: #ff5252;
+      --border-dark: #262c36;
+      --text-main: #ffffff;
+      --text-muted: #848e9c;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background: var(--bg-dark); color: var(--text-main); padding: 16px; min-height: 100vh; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; }
-    .form-group { margin-bottom: 10px; }
-    .form-group label { display: block; font-size: 0.7rem; color: var(--text-muted); font-weight:700; margin-bottom:4px; }
-    .form-control { width: 100%; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size:0.85rem; }
-    .btn-submit { width: 100%; padding: 10px; background: var(--accent-neon); border: none; border-radius: 8px; font-weight:800; color: #022c22; cursor: pointer; margin-top: 10px; }
-    .btn-logout { background: rgba(255, 77, 77, 0.15); border: 1px solid var(--red-accent); color: var(--red-accent); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+    body { background-color: var(--bg-canvas); color: var(--text-main); display: flex; justify-content: center; padding: 20px; }
+    .admin-container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 16px; }
+    .card { background: var(--bg-card); border: 1px solid var(--border-dark); border-radius: 12px; padding: 20px; }
+    h2 { font-size: 1.1rem; color: var(--accent-green); margin-bottom: 16px; font-weight: 800; }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; }
+    select, input { width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border-dark); border-radius: 8px; color: var(--text-main); font-weight: 700; }
+    .btn-submit { width: 100%; padding: 14px; background: var(--accent-green); border: none; border-radius: 8px; font-weight: 800; cursor: pointer; color: #000; margin-top: 10px; }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .signal-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+    .signal-item { background: var(--bg-input); border: 1px solid var(--border-dark); padding: 10px; border-radius: 6px; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <h3 style="color: var(--accent-neon);">⚡ ADMIN PANEL</h3>
-    <button id="btn-logout" class="btn-logout">LOGOUT</button>
-  </div>
+  <div class="admin-container">
+    <div class="card">
+      <h2>ADMIN MASTER SIGNAL GENERATOR</h2>
+      <form id="admin-signal-form">
+        <div class="form-group">
+          <label>SELECT PAIR</label>
+          <select id="admin-pair">
+            <option value="BTC/USDT">BTC/USDT</option>
+            <option value="ETH/USDT">ETH/USDT</option>
+            <option value="SOL/USDT">SOL/USDT</option>
+            <option value="EUR/USD">EUR/USD</option>
+            <option value="GBP/USD">GBP/USD</option>
+          </select>
+        </div>
 
-  <div class="card">
-    <form id="signal-form">
-      <div class="form-group">
-        <label>PAIR TRADING</label>
-        <input type="text" id="pair" placeholder="BTC/USDT" class="form-control" required>
+        <div class="form-group">
+          <label>SIGNAL DIRECTION</label>
+          <select id="admin-type">
+            <option value="BUY">BUY / UP</option>
+            <option value="SELL">SELL / DOWN</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>ENTRY PRICE</label>
+          <input type="text" id="admin-entry" placeholder="Contoh: 65200.50" required>
+        </div>
+
+        <div class="form-group">
+          <label>TARGET TAKE PROFIT (TP)</label>
+          <input type="text" id="admin-tp" placeholder="Contoh: 65800.00" required>
+        </div>
+
+        <div class="form-group">
+          <label>STOP LOSS (SL)</label>
+          <input type="text" id="admin-sl" placeholder="Contoh: 64900.00" required>
+        </div>
+
+        <button type="submit" id="btn-save-signal" class="btn-submit">PUBLISH SIGNAL (REPLACE OLD)</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h2>ACTIVE ADMIN SIGNALS (2 WEEKS VALID)</h2>
+      <div id="active-signals-list" class="signal-list">
+        <span style="color: var(--text-muted); font-size: 0.8rem;">Loading...</span>
       </div>
-      <div class="form-group">
-        <label>TIPE POSISI</label>
-        <select id="type" class="form-control">
-          <option>BUY / LONG</option>
-          <option>SELL / SHORT</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>ENTRY AREA</label>
-        <input type="text" id="entry" placeholder="65,000 - 65,200" class="form-control" required>
-      </div>
-      <div class="form-group">
-        <label>TARGET TP</label>
-        <input type="text" id="tp" placeholder="67,000" class="form-control" required>
-      </div>
-      <div class="form-group">
-        <label>STOP LOSS</label>
-        <input type="text" id="sl" placeholder="64,000" class="form-control" required>
-      </div>
-      <div class="form-group">
-        <label>LEVERAGE</label>
-        <input type="text" id="leverage" placeholder="10x - 20x" class="form-control" required>
-      </div>
-      <button type="submit" id="btn-send" class="btn-submit">KIRIM SINYAL</button>
-    </form>
+    </div>
   </div>
 
   <script type="module">
-    import { auth, db } from "./firebase-config.js";
-    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { db } from "./firebase-config.js";
+    import { collection, query, where, getDocs, deleteDoc, doc, setDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // ⚠️ Ganti dengan email akun admin Anda
-    const ADMIN_EMAIL = "yumetrader63@gmail.com"; 
+    const form = document.getElementById("admin-signal-form");
+    const btnSave = document.getElementById("btn-save-signal");
 
-    // PROTEKSI: Cek apakah user login adalah Admin
-    onAuthStateChanged(auth, (user) => {
-      if (!user || user.email !== ADMIN_EMAIL) {
-        alert("Akses Ditolak! Khusus Admin.");
-        window.location.href = "index.html";
+    // Load Live Active Admin Signals
+    onSnapshot(collection(db, "admin_master_signals"), (snapshot) => {
+      const container = document.getElementById("active-signals-list");
+      container.innerHTML = "";
+      if (snapshot.empty) {
+        container.innerHTML = `<span style="color: var(--text-muted); font-size: 0.8rem;">Belum ada sinyal aktif.</span>`;
+        return;
       }
+      snapshot.forEach(docSnap => {
+        const data = docSnap.data();
+        const expDate = new Date(data.adminExpiryMs).toLocaleDateString("id-ID");
+        container.innerHTML += `
+          <div class="signal-item">
+            <div>
+              <b>${data.pair}</b> - <span style="color:${data.type === 'BUY' ? 'var(--accent-green)' : 'var(--red-trade)'}">${data.type}</span><br>
+              <small style="color:var(--text-muted)">Entry: ${data.entry} | TP: ${data.tp} | SL: ${data.sl}</small>
+            </div>
+            <small style="color:var(--text-muted)">Exp: ${expDate}</small>
+          </div>
+        `;
+      });
     });
 
-    // Tambah Data Sinyal ke Firestore Database
-    document.getElementById("signal-form").addEventListener("submit", async (e) => {
+    // Handle Publish Signal (Hapus Lama -> Simpan Baru)
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const btn = document.getElementById("btn-send");
-      btn.innerText = "MENGIRIM...";
-      btn.disabled = true;
+      btnSave.disabled = true;
+      btnSave.innerText = "PROCESSING...";
+
+      const pair = document.getElementById("admin-pair").value;
+      const type = document.getElementById("admin-type").value;
+      const entry = document.getElementById("admin-entry").value;
+      const tp = document.getElementById("admin-tp").value;
+      const sl = document.getElementById("admin-sl").value;
 
       try {
-        await addDoc(collection(db, "signals"), {
-          pair: document.getElementById("pair").value,
-          type: document.getElementById("type").value,
-          entry: document.getElementById("entry").value,
-          tp: document.getElementById("tp").value,
-          sl: document.getElementById("sl").value,
-          leverage: document.getElementById("leverage").value,
+        // 1. Cari & Hapus Sinyal Lama untuk Pair yang Sama
+        const q = query(collection(db, "admin_master_signals"), where("pair", "==", pair));
+        const oldDocs = await getDocs(q);
+        const deletePromises = [];
+        oldDocs.forEach(d => deletePromises.push(deleteDoc(doc(db, "admin_master_signals", d.id))));
+        await Promise.all(deletePromises);
+
+        // 2. Set Expired 2 Minggu (14 Hari)
+        const now = new Date();
+        const twoWeeksMs = now.getTime() + (14 * 24 * 60 * 60 * 1000);
+
+        // 3. Simpan Sinyal Master Baru
+        const docRef = doc(collection(db, "admin_master_signals"));
+        await setDoc(docRef, {
+          pair: pair,
+          type: type,
+          entry: entry,
+          tp: tp,
+          sl: sl,
+          adminExpiryMs: twoWeeksMs,
           createdAt: serverTimestamp()
         });
-        alert("Sinyal berhasil dikirim!");
-        document.getElementById("signal-form").reset();
-      } catch (err) {
-        alert("Gagal mengirim sinyal: " + err.message);
-      } finally {
-        btn.innerText = "KIRIM SINYAL";
-        btn.disabled = false;
-      }
-    });
 
-    document.getElementById("btn-logout").addEventListener("click", () => {
-      signOut(auth).then(() => window.location.href = "index.html");
+        alert(`Sinyal ${pair} berhasil dipublikasikan & menggantikan sinyal lama!`);
+        form.reset();
+      } catch (err) {
+        alert("Gagal menyimpan sinyal: " + err.message);
+      } finally {
+        btnSave.disabled = false;
+        btnSave.innerText = "PUBLISH SIGNAL (REPLACE OLD)";
+      }
     });
   </script>
 </body>
