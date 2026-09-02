@@ -241,7 +241,6 @@
       justify-content: center;
     }
 
-    /* Tampilan saat belum ada sinyal */
     .empty-signal-state {
       display: flex;
       flex-direction: column;
@@ -272,7 +271,6 @@
       letter-spacing: 0.5px;
     }
 
-    /* Tampilan detail sinyal aktif */
     .signal-header {
       display: flex;
       justify-content: space-between;
@@ -393,7 +391,6 @@
 
   <div class="terminal-container">
     
-    <!-- Header Bar -->
     <div class="card-base header-bar">
       <div class="brand-title">
         <div class="status-dot"></div>
@@ -402,13 +399,11 @@
       <button id="btn-logout" class="btn-logout">OUT</button>
     </div>
 
-    <!-- 1. Live Server Clock -->
     <div class="card-base clock-card">
       <div class="clock-label">SERVER TIME</div>
       <div id="live-clock" class="clock-time">00:00:00</div>
     </div>
 
-    <!-- 2. Kotak Email User -->
     <div class="card-base user-card">
       <span class="user-label">ACCOUNT</span>
       <div class="email-wrapper">
@@ -419,7 +414,6 @@
       </div>
     </div>
 
-    <!-- 3. KOTAK CONTROL PANEL -->
     <div class="card-base panel-card">
       <div>
         <span class="panel-label">SELECT ASSET</span>
@@ -441,16 +435,13 @@
       <button id="btn-generate" type="button" class="btn-execute">GENERATE SIGNAL</button>
     </div>
 
-    <!-- 4. KOTAK SIGNAL TUNGGAL (Terpisah di Bawah Control Panel) -->
     <div class="signal-single-card">
       
-      <!-- State 1: Kosong (Tanda Tanya Besar) -->
       <div id="empty-signal-state" class="empty-signal-state">
         <div class="question-mark">?</div>
         <div class="empty-text">NO SIGNAL GENERATED YET</div>
       </div>
 
-      <!-- State 2: Ada Sinyal -->
       <div id="active-signal-state" style="display: none;">
         <div class="signal-header">
           <span id="res-pair" class="signal-pair">BTC/USDT</span>
@@ -460,7 +451,7 @@
           <div class="grid-item"><span>ENTRY AREA</span><b id="res-entry">-</b></div>
           <div class="grid-item"><span>TARGET TP</span><b id="res-tp" style="color: var(--accent-green);">-</b></div>
           <div class="grid-item"><span>STOP LOSS</span><b id="res-sl" style="color: var(--red-trade);">-</b></div>
-          <div class="grid-item"><span>TIMEFRAME</span><b id="res-tf">-</b></div>
+          <div class="grid-item"><span>VALID UNTIL</span><b id="res-valid" style="color: var(--accent-green);">-</b></div>
         </div>
       </div>
 
@@ -468,7 +459,6 @@
 
   </div>
 
-  <!-- MODAL POPUP SELECT ASSET -->
   <div id="asset-modal" class="modal-overlay">
     <div class="modal-content">
       <div class="modal-header">
@@ -504,14 +494,14 @@
   <script type="module">
     import { auth, db } from "./firebase-config.js";
     import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { collection, query, where, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { collection, query, where, orderBy, limit, getDocs, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     let rawEmail = "";
     let isEmailHidden = false;
     let selectedPair = "BTC/USDT";
     let selectedTimeframe = "15s";
 
-    // --- 1. Realtime Server Clock (Langsung Jalan) ---
+    // 1. Realtime Server Clock
     function startClock() {
       const clockEl = document.getElementById("live-clock");
       function update() {
@@ -526,7 +516,7 @@
     }
     startClock();
 
-    // --- 2. Auth State & Email Toggle ---
+    // 2. Auth State & Email Display
     const emailText = document.getElementById("user-email-text");
     const toggleEmailBtn = document.getElementById("toggle-email");
 
@@ -556,23 +546,14 @@
       });
     }
 
-    // --- 3. Asset Popup Modal Logic ---
+    // 3. Popup Asset Modal
     const assetModal = document.getElementById("asset-modal");
     const openModalBtn = document.getElementById("open-asset-modal");
     const closeModalBtn = document.getElementById("close-asset-modal");
     const currentAssetText = document.getElementById("current-asset-text");
 
-    if (openModalBtn && assetModal) {
-      openModalBtn.addEventListener("click", () => {
-        assetModal.style.display = "flex";
-      });
-    }
-
-    if (closeModalBtn && assetModal) {
-      closeModalBtn.addEventListener("click", () => {
-        assetModal.style.display = "none";
-      });
-    }
+    if (openModalBtn && assetModal) openModalBtn.addEventListener("click", () => assetModal.style.display = "flex");
+    if (closeModalBtn && assetModal) closeModalBtn.addEventListener("click", () => assetModal.style.display = "none");
 
     document.querySelectorAll(".asset-item").forEach(item => {
       item.addEventListener("click", () => {
@@ -582,7 +563,7 @@
       });
     });
 
-    // --- 4. Timeframe Selector Logic ---
+    // 4. Timeframe Selector
     const tfButtons = document.querySelectorAll(".tf-btn");
     tfButtons.forEach(btn => {
       btn.addEventListener("click", () => {
@@ -592,55 +573,105 @@
       });
     });
 
-    // --- 5. Generate Signal Logic ---
+    // Helper: Hitung Durasi Jam Berdasarkan Timeframe
+    function getDurationHours(tf) {
+      if (tf === "15s") return 2; // 15 detik -> 2 jam
+      if (tf === "1m") return 4;  // 1 menit -> 4 jam
+      if (tf === "5m") return 8;  // 5 menit -> 8 jam
+      return 2;
+    }
+
+    // Helper: Algoritma Generator Harga Sinyal
+    function generateNewSignalData(pair, tf) {
+      const isBuy = Math.random() > 0.5;
+      const basePrice = pair.includes("BTC") ? 65000 : pair.includes("ETH") ? 3500 : pair.includes("SOL") ? 140 : 1.0850;
+      const variance = basePrice * 0.002;
+      
+      const entry = (basePrice + (Math.random() - 0.5) * variance).toFixed(pair.includes("USD") && !pair.includes("USDT") ? 4 : 2);
+      const tp = isBuy ? (parseFloat(entry) * 1.005).toFixed(pair.includes("USD") && !pair.includes("USDT") ? 4 : 2) : (parseFloat(entry) * 0.995).toFixed(pair.includes("USD") && !pair.includes("USDT") ? 4 : 2);
+      const sl = isBuy ? (parseFloat(entry) * 0.997).toFixed(pair.includes("USD") && !pair.includes("USDT") ? 4 : 2) : (parseFloat(entry) * 1.003).toFixed(pair.includes("USD") && !pair.includes("USDT") ? 4 : 2);
+
+      const now = new Date();
+      const validUntil = new Date(now.getTime() + getDurationHours(tf) * 60 * 60 * 1000);
+
+      return {
+        pair: pair,
+        timeframe: tf,
+        type: isBuy ? "BUY" : "SELL",
+        entry: entry,
+        tp: tp,
+        sl: sl,
+        validUntilMs: validUntil.getTime()
+      };
+    }
+
+    // Render Data ke Tampilan UI Sinyal
+    function renderSignalToUI(data) {
+      document.getElementById("res-pair").innerText = `${data.pair} (${data.timeframe})`;
+      const isBuy = data.type.toUpperCase().includes("BUY");
+      const resType = document.getElementById("res-type");
+      resType.innerText = isBuy ? "BUY / UP" : "SELL / DOWN";
+      resType.className = `signal-type ${isBuy ? "type-buy" : "type-sell"}`;
+
+      document.getElementById("res-entry").innerText = data.entry;
+      document.getElementById("res-tp").innerText = data.tp;
+      document.getElementById("res-sl").innerText = data.sl;
+      
+      const validDate = new Date(data.validUntilMs);
+      const h = String(validDate.getHours()).padStart(2, '0');
+      const m = String(validDate.getMinutes()).padStart(2, '0');
+      document.getElementById("res-valid").innerText = `${h}:${m} WIB`;
+
+      document.getElementById("empty-signal-state").style.display = "none";
+      document.getElementById("active-signal-state").style.display = "block";
+    }
+
+    // 5. Generate & Synchronize Signal Logic
     const btnGenerate = document.getElementById("btn-generate");
-    const emptyState = document.getElementById("empty-signal-state");
-    const activeState = document.getElementById("active-signal-state");
 
     btnGenerate.addEventListener("click", async () => {
       btnGenerate.innerText = "ANALYZING MARKET...";
       btnGenerate.disabled = true;
 
       try {
+        const nowMs = new Date().getTime();
+
+        // Cari sinyal aktif dari database
         const q = query(
           collection(db, "signals"),
           where("pair", "==", selectedPair),
-          orderBy("createdAt", "desc"),
+          where("timeframe", "==", selectedTimeframe),
+          where("validUntilMs", ">", nowMs),
+          orderBy("validUntilMs", "desc"),
           limit(1)
         );
 
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
-          const data = querySnapshot.docs[0].data();
-
-          document.getElementById("res-pair").innerText = data.pair;
-          const isBuy = data.type.toUpperCase().includes("BUY");
-          const resType = document.getElementById("res-type");
-          resType.innerText = isBuy ? "BUY / UP" : "SELL / DOWN";
-          resType.className = `signal-type ${isBuy ? "type-buy" : "type-sell"}`;
-
-          document.getElementById("res-entry").innerText = data.entry;
-          document.getElementById("res-tp").innerText = data.tp;
-          document.getElementById("res-sl").innerText = data.sl;
-          document.getElementById("res-tf").innerText = selectedTimeframe.toUpperCase();
-
-          emptyState.style.display = "none";
-          activeState.style.display = "block";
+          // 1. Sinyal aktif sudah ada -> Pakai sinyal dari database (Semua user sama)
+          const existingData = querySnapshot.docs[0].data();
+          renderSignalToUI(existingData);
         } else {
-          alert(`Sinyal untuk ${selectedPair} belum tersedia.`);
-          activeState.style.display = "none";
-          emptyState.style.display = "flex";
+          // 2. Belum ada sinyal aktif -> Generate baru lalu simpan ke database
+          const newSignal = generateNewSignalData(selectedPair, selectedTimeframe);
+          
+          await addDoc(collection(db, "signals"), {
+            ...newSignal,
+            createdAt: serverTimestamp()
+          });
+
+          renderSignalToUI(newSignal);
         }
       } catch (err) {
-        alert("Gagal mengambil data sinyal: " + err.message);
+        alert("Terjadi kesalahan: " + err.message);
       } finally {
         btnGenerate.innerText = "GENERATE SIGNAL";
         btnGenerate.disabled = false;
       }
     });
 
-    // --- 6. Logout ---
+    // 6. Logout Logic
     document.getElementById("btn-logout").addEventListener("click", () => {
       signOut(auth).then(() => window.location.href = "index.html");
     });
