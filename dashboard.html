@@ -2,52 +2,83 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yume Trading - Dashboard Member</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-dark: #050b08; --card-bg: rgba(12, 24, 18, 0.85); --card-border: rgba(16, 185, 129, 0.25);
       --accent-neon: #00ff87; --text-main: #f0fdf4; --text-muted: #9ca3af; --red-accent: #ff4d4d;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-    body { background-color: var(--bg-dark); color: var(--text-main); padding: 14px; min-height: 100vh; }
-    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-    .badge-online { background: rgba(0, 255, 135, 0.1); border: 1px solid var(--accent-neon); color: var(--accent-neon); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; }
+    body { background: var(--bg-dark); color: var(--text-main); padding: 16px; min-height: 100vh; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     .btn-logout { background: rgba(255, 77, 77, 0.15); border: 1px solid var(--red-accent); color: var(--red-accent); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
     .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-bottom: 12px; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
-    .item { background: rgba(0,0,0,0.4); padding: 8px 10px; border-radius: 8px; font-size: 0.8rem; }
+    .item { background: rgba(0,0,0,0.4); padding: 8px; border-radius: 8px; font-size: 0.85rem; }
     .item label { display: block; font-size: 0.65rem; color: var(--text-muted); font-weight: 700; }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <div class="badge-online">🟢 ONLINE MEMBER</div>
-    <button class="btn-logout" onclick="logout()">LOGOUT</button>
+    <span style="color:var(--accent-neon); font-size:0.8rem; font-weight:800;">🟢 VIP MEMBER ACTIVE</span>
+    <button id="btn-logout" class="btn-logout">LOGOUT</button>
   </div>
 
-  <h3 style="font-size: 1rem; margin-bottom: 12px; color: var(--accent-neon);">📈 Sinyal Aktif VIP</h3>
+  <h3 style="margin-bottom: 12px; color:var(--accent-neon);">📈 Sinyal Trading Real-Time</h3>
+  <div id="signals-container">Memuat sinyal...</div>
 
-  <div class="card">
-    <div style="display:flex; justify-content:space-between; align-items:center;">
-      <b style="font-size: 1.1rem;">BTC / USDT</b>
-      <span style="color:var(--accent-neon); font-size: 0.75rem; font-weight:800;">15M - LONG</span>
-    </div>
-    <div class="grid">
-      <div class="item"><label>ENTRY</label>65,200 - 65,450</div>
-      <div class="item"><label>TARGET TP</label><span style="color:var(--accent-neon);">67,000</span></div>
-      <div class="item"><label>STOP LOSS</label><span style="color:var(--red-accent);">64,300</span></div>
-      <div class="item"><label>LEVERAGE</label>10x - 20x</div>
-    </div>
-  </div>
+  <script type="module">
+    import { auth, db } from "./firebase-config.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-  <script src="auth.js"></script>
-  <script>
-    // WAJIB: Proteksi Halaman saat Dimuat
-    protectMemberPage();
+    // PROTEKSI: Cek Autentikasi Firebase Server-Side
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        window.location.href = "index.html"; // Tendang jika belum login
+      } else {
+        loadSignals();
+      }
+    });
+
+    // Ambil Sinyal Realtime dari Firestore
+    function loadSignals() {
+      const q = query(collection(db, "signals"), orderBy("createdAt", "desc"));
+      onSnapshot(q, (snapshot) => {
+        const container = document.getElementById("signals-container");
+        container.innerHTML = "";
+
+        if (snapshot.empty) {
+          container.innerHTML = "<p style='color:var(--text-muted); font-size:0.85rem;'>Belum ada sinyal aktif.</p>";
+          return;
+        }
+
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          container.innerHTML += `
+            <div class="card">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <b style="font-size: 1.1rem;">${data.pair}</b>
+                <span style="color:${data.type === 'BUY / LONG' ? 'var(--accent-neon)' : 'var(--red-accent)'}; font-size: 0.75rem; font-weight:800;">${data.type}</span>
+              </div>
+              <div class="grid">
+                <div class="item"><label>ENTRY</label>${data.entry}</div>
+                <div class="item"><label>TARGET TP</label><span style="color:var(--accent-neon);">${data.tp}</span></div>
+                <div class="item"><label>STOP LOSS</label><span style="color:var(--red-accent);">${data.sl}</span></div>
+                <div class="item"><label>LEVERAGE</label>${data.leverage}</div>
+              </div>
+            </div>
+          `;
+        });
+      });
+    }
+
+    document.getElementById("btn-logout").addEventListener("click", () => {
+      signOut(auth).then(() => window.location.href = "index.html");
+    });
   </script>
 </body>
 </html>
-
